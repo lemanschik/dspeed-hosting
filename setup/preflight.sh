@@ -7,16 +7,6 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 
-# Check that we are running on Ubuntu 20.04 LTS (or 20.04.xx).
-if [ "$( lsb_release --id --short )" != "Ubuntu" ] || [ "$( lsb_release --release --short )" != "22.04" ]; then
-	echo "Mail-in-a-Box only supports being installed on Ubuntu 22.04, sorry. You are running:"
-	echo
-	lsb_release --description --short
-	echo
-	echo "We can't write scripts that run on every possible setup, sorry."
-	exit 1
-fi
-
 # Check that we have enough memory.
 #
 # /proc/meminfo reports free memory in kibibytes. Our baseline will be 512 MB,
@@ -36,20 +26,20 @@ if [ ! -d /vagrant ]; then
 fi
 fi
 if [ $TOTAL_PHYSICAL_MEM -lt 750000 ]; then
-	echo "WARNING: Your Mail-in-a-Box has less than 768 MB of memory."
+	echo "WARNING: less than 768 MB of memory."
 	echo "         It might run unreliably when under heavy load."
 fi
 
 # Check that tempfs is mounted with exec
 MOUNTED_TMP_AS_NO_EXEC=$(grep "/tmp.*noexec" /proc/mounts || /bin/true)
 if [ -n "$MOUNTED_TMP_AS_NO_EXEC" ]; then
-	echo "Mail-in-a-Box has to have exec rights on /tmp, please mount /tmp with exec"
+	echo "Got no exec rights on /tmp, please mount /tmp with exec"
 	exit
 fi
 
 # Check that no .wgetrc exists
 if [ -e ~/.wgetrc ]; then
-	echo "Mail-in-a-Box expects no overrides to wget defaults, ~/.wgetrc exists"
+	echo "expecting no overrides to wget defaults, ~/.wgetrc exists"
 	exit
 fi
 
@@ -59,7 +49,7 @@ ARCHITECTURE=$(uname -m)
 if [ "$ARCHITECTURE" != "x86_64" ] && [ "$ARCHITECTURE" != "i686" ]; then
 	echo
 	echo "WARNING:"
-	echo "Mail-in-a-Box has only been tested on x86_64 and i686 platform"
+	echo "only tested on x86_64 and i686 platform"
 	echo "architectures. Your architecture, $ARCHITECTURE, may not work."
 	echo "You are on your own."
 	echo
