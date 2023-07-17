@@ -3,6 +3,7 @@
 #################################################
 
 source setup/functions.sh # load our functions
+# $ STORAGE_USER STORAGE_ROOT PRIMARY_HOSTNAME PUBLIC_IP PUBLIC_IPV6 PRIVATE_IP PRIVATE_IPV6
 source /etc/mailinabox.conf # load global vars
 
 # Some Ubuntu images start off with Apache. Remove it since we
@@ -17,9 +18,38 @@ fi
 #
 # Turn off nginx's default website.
 
-echo "Installing Nginx (web server)..."
+echo "Installing Nginx (web server) as container..."
+apt_install podman
 
-apt_install php${PHP_VER}-cli php${PHP_VER}-fpm idn2
+## A Infrastructure Container
+podman pod --name mail-pod nginx:latest
+## Without infrastructure Container strip the pod flag and gen
+podman create --ignore --pod mail-pod --name nginx \
+ -v ${STORAGE_ROOT}:${STORAGE_ROOT}
+ -v /etc/nginx:/etc/nginx \
+ -v /var/lib/mailinabox:/var/lib/mailinabox \
+ nginx:latest
+## Note --ignore does simple not error if it already exists 
+
+# podman generate systemd --new --files --name nginx --restart-policy=always 
+# -t 1 nginx would use template 1 and so on
+podman generate systemd --files --name mail-pod
+
+systemctl install $PWD/mail-pod.service
+systemctl enable mail-pod.service
+
+## Build a Custom Container
+#podman create network mail-web
+#podman run --name nginx STOPSIGNAL-i ubuntu:23.04 sh -- <<'EOF'
+#    apt-get install nginx
+#EOF
+#podman commit -nginx
+#podman --change "STOPSIGNAL SIGQUIT" --change 'CMD ["nginx", "-g", "daemon off;"]'
+
+echo "Installing php-fpm (setup/web.sh)..."
+apt_install nginx php${PHP_VER}-cli php${PHP_VER}-fpm idn2
+systemctl stop nginx
+systemctl disable nginx
 
 rm -f /etc/nginx/sites-enabled/default
 
@@ -146,7 +176,7 @@ fi
 chown -R $STORAGE_USER $STORAGE_ROOT/www
 
 # Start services.
-restart_service nginx
+# restart_service nginx
 restart_service php$PHP_VER-fpm
 
 # Open ports.
