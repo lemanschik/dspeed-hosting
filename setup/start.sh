@@ -28,19 +28,21 @@ export LC_TYPE=en_US.UTF-8
 export NCURSES_NO_UTF8_ACS=1
 
 # Recall the last settings used if we're running this a second time.
-if [ -f /etc/mailinabox.conf ]; then
+if [ -f /etc/mailinabox-migrate.conf ]; then
 	# Run any system migrations before proceeding. Since this is a second run,
 	# we assume we have Python already installed.
 	setup/migrate.py --migrate || exit 1
 
 	# Load the old .conf file to get existing configuration options loaded
 	# into variables with a DEFAULT_ prefix.
-	cat /etc/mailinabox.conf | sed s/^/DEFAULT_/ > /tmp/mailinabox.prev.conf
+	cat /etc/mailinabox-migrate.conf | sed s/^/DEFAULT_/ > /tmp/mailinabox.prev.conf
 	source /tmp/mailinabox.prev.conf
 	rm -f /tmp/mailinabox.prev.conf
 else
 	FIRST_TIME_SETUP=1
 fi
+
+ln -s /etc/mailinabox-migrate.conf /etc/mailinabox.conf
 
 # Put a start script in a global location. We tell the user to run 'mailinabox'
 # in the first dialog prompt, so we should do this before that starts.
@@ -88,11 +90,11 @@ if [ ! -f $STORAGE_ROOT/mailinabox.version ]; then
 	chown $STORAGE_USER:$STORAGE_USER $STORAGE_ROOT/mailinabox.version
 fi
 
-# Save the global options in /etc/mailinabox.conf so that standalone
+# Save the global options in /etc/mailinabox-migrate.conf so that standalone
 # tools know where to look for data. The default MTA_STS_MODE setting
 # is blank unless set by an environment variable, but see web.sh for
 # how that is interpreted.
-cat > /etc/mailinabox.conf << EOF;
+cat > /etc/mailinabox-migrate.conf << EOF;
 STORAGE_USER=$STORAGE_USER
 STORAGE_ROOT=$STORAGE_ROOT
 PRIMARY_HOSTNAME=$PRIMARY_HOSTNAME
