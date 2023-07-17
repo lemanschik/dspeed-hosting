@@ -38,9 +38,11 @@ podman pod --name mail-pod nginx:latest
 podman create --ignore --pod mail-pod --name nginx \
  -v ${STORAGE_ROOT}:${STORAGE_ROOT} \
  -v /etc/nginx:/etc/nginx \
+ -v /tmp:/tmp \
  -v /var/lib/mailinabox:/var/lib/mailinabox \
  -v /usr/local/lib/mailinabox:/usr/local/lib/mailinabox \
  -v /etc/mailinabox.conf:/etc/mailinabox.conf
+ -p 127.0.0.1:
  --env-file /etc/mailinabox-migrate.conf \
  nginx:latest
 ## Note --ignore does simple not error if it already exists 
