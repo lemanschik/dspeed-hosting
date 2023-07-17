@@ -4,9 +4,27 @@
 
 source setup/functions.sh # load our functions
 # $ STORAGE_USER STORAGE_ROOT PRIMARY_HOSTNAME PUBLIC_IP PUBLIC_IPV6 PRIVATE_IP PRIVATE_IPV6
-# load global vars
-if [[ ! -v STORAGE_ROOT ]]; then source /etc/mailinabox.conf; fi
- 
+
+## migrate if needed
+if [ -e "/etc/mailinabox.conf" ]; then
+    if [ ! -L "$1" ]
+    then
+        mv /etc/mailinabox.conf /etc/mailinabox-migrate.conf
+    else
+        echo "your entry is symlink as expected"
+    fi
+else
+  echo "=> File doesn't exist did you run setup/start.sh ?"
+fi
+
+## Overwrite
+cat <<'EOF' | > /etc/mailinabox.conf 
+if [[ ! -v STORAGE_ROOT ]]; then source /etc/mailinabox-migrate.conf; fi
+EOF
+
+# load global vars if not running in a container.
+source /etc/mailinabox.conf
+
 # Install nginx and a PHP FastCGI daemon.
 #
 # Turn off nginx's default website.
@@ -22,7 +40,8 @@ podman create --ignore --pod mail-pod --name nginx \
  -v /etc/nginx:/etc/nginx \
  -v /var/lib/mailinabox:/var/lib/mailinabox \
  -v /usr/local/lib/mailinabox:/usr/local/lib/mailinabox \
- --env-file /etc/mailinabox.conf \
+ -v /etc/mailinabox.conf:/etc/mailinabox.conf
+ --env-file /etc/mailinabox-migrate.conf \
  nginx:latest
 ## Note --ignore does simple not error if it already exists 
 
