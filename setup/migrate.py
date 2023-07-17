@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Migrates any file structures, database schemas, etc. between versions of Mail-in-a-Box.
+# Migrates any file structures, database schemas, etc. between versions.
 
 # We have to be careful here that any dependencies are already installed in the previous
 # version since this script runs before all other aspects of the setup script.
