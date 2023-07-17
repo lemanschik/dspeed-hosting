@@ -220,6 +220,8 @@ def make_domain_config(domain, templates, ssl_certificates, env):
 		nginx_conf = re.sub("[ \t]*# ADDITIONAL DIRECTIVES HERE *\n", t, nginx_conf)
 
 	# Replace substitution strings in the template & return.
+	nginx_conf = nginx_conf.replace("$PUBLIC_IP", env['PUBLIC_IP'])
+	nginx_conf = nginx_conf.replace("$PUBLIC_IPV6", env['PUBLIC_IPV6'])
 	nginx_conf = nginx_conf.replace("$STORAGE_ROOT", env['STORAGE_ROOT'])
 	nginx_conf = nginx_conf.replace("$HOSTNAME", domain)
 	nginx_conf = nginx_conf.replace("$ROOT", root)
