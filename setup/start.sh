@@ -4,8 +4,8 @@
 
 source setup/functions.sh # load our functions
 
-# Check system setup: Are we running as root on Ubuntu 18.04 on a
-# machine with enough memory? Is /tmp mounted with exec.
+# Check system setup: Are we running as root on Ubuntu 
+# with enough memory? Is /tmp mounted with exec.
 # If not, this shows an error and exits.
 source setup/preflight.sh
 
@@ -42,7 +42,6 @@ else
 	FIRST_TIME_SETUP=1
 fi
 
-ln -s /etc/mailinabox-migrate.conf /etc/mailinabox.conf
 
 # Put a start script in a global location. We tell the user to run 'mailinabox'
 # in the first dialog prompt, so we should do this before that starts.
@@ -105,6 +104,10 @@ PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
 EOF
 
+ln -s /etc/mailinabox-migrate.conf /etc/mailinabox.conf
+
+## if your running setup/containers the /etc/mainilinabox.conf gets upgraded 
+
 # Start service configuration.
 source setup/system.sh
 source setup/ssl.sh
@@ -158,7 +161,7 @@ fi
 echo
 echo "-----------------------------------------------"
 echo
-echo Your Mail-in-a-Box is running.
+echo Your mail-pod is running.
 echo
 echo Please log in to the control panel for further instructions at:
 echo
