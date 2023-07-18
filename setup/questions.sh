@@ -7,9 +7,9 @@ if [ -z "${NONINTERACTIVE:-}" ]; then
 	#
 	# Also install dependencies needed to validate the email address.
 	if [ ! -f /usr/bin/dialog ] || [ ! -f /usr/bin/python3 ] || [ ! -f /usr/bin/pip3 ]; then
-		echo Installing packages needed for setup...
+		echo "Installing packages needed for setup..."
 		apt-get -q -q update
-		apt_get_quiet install dialog python3 python3-pip  || exit 1
+		apt_get_quiet install dialog python3 python3-pip python-is-python3 || exit 1
 	fi
 
 	# Installing email_validator is repeated in setup/management.sh, but in setup/management.sh
@@ -17,17 +17,17 @@ if [ -z "${NONINTERACTIVE:-}" ]; then
 	# so we install the python package globally.
 	hide_output pip3 install "email_validator>=1.0.0" || exit 1
 
-	message_box "Mail-in-a-Box Installation" \
-		"Hello and thanks for deploying a Mail-in-a-Box!
-		\n\nI'm going to ask you a few questions.
-		\n\nTo change your answers later, just run 'sudo mailinabox' from the command line.
-		\n\nNOTE: You should only install this on a brand new Ubuntu installation 100% dedicated to Mail-in-a-Box. Mail-in-a-Box will, for example, remove apache2."
+	message_box "Installation" \
+		"Email/Host Configuration
+		\n\nTo change your answers later, just run 'sudo hostsetup' from the command line.
+		\n\nNOTE: You should only install this on a brand new Ubuntu installation 100% 
+        \ndedicated to hostsetup. hostsetup will, for example, remove apache2."
 fi
 
-# The box needs a name.
+# The host needs a name.
 if [ -z "${PRIMARY_HOSTNAME:-}" ]; then
 	if [ -z "${DEFAULT_PRIMARY_HOSTNAME:-}" ]; then
-		# We recommend to use box.example.com as this hosts name. The
+		# We recommend to use mail.example.com as this hosts name. The
 		# domain the user possibly wants to use is example.com then.
 		# We strip the string "box." from the hostname to get the mail
 		# domain. If the hostname differs, nothing happens here.
@@ -65,7 +65,7 @@ you really want.
 
 		# Take the part after the @-sign as the user's domain name, and add
 		# 'box.' to the beginning to create a default hostname for this machine.
-		DEFAULT_PRIMARY_HOSTNAME=box.$(echo $EMAIL_ADDR | sed 's/.*@//')
+		DEFAULT_PRIMARY_HOSTNAME=mail.$(echo $EMAIL_ADDR | sed 's/.*@//')
 	fi
 
 	input_box "Hostname" \
@@ -163,7 +163,7 @@ fi
 if [[ -z "$PRIVATE_IP" && -z "$PRIVATE_IPV6" ]]; then
 	echo
 	echo "I could not determine the IP or IPv6 address of the network inteface"
-	echo "for connecting to the Internet. Setup must stop."
+	echo "for connecting to the Internet. Setup needs manual fix for PRIVATE_IPV6."
 	echo
 	hostname -I
 	route
@@ -207,6 +207,6 @@ if [ "$PRIVATE_IPV6" != "$PUBLIC_IPV6" ]; then
 	echo "Private IPv6 Address: $PRIVATE_IPV6"
 fi
 if [ -f /usr/bin/git ] && [ -d .git ]; then
-	echo "Mail-in-a-Box Version: " $(git describe)
+	echo "Version: " $(git describe)
 fi
 echo
