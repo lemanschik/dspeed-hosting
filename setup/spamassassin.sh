@@ -117,7 +117,7 @@ describe SPF_FAIL SPF check failed
 score SPF_FAIL 5.0
 EOF
 
-# Bayesean learning
+# Bayesian learning
 # -----------------
 #
 # Spamassassin can learn from mail marked as spam or ham, but it needs to be
