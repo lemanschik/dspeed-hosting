@@ -58,7 +58,7 @@ tools/editconf.py /etc/postfix/main.cf \
 	smtp_bind_address=$PRIVATE_IP \
 	smtp_bind_address6=$PRIVATE_IPV6 \
 	myhostname=$PRIMARY_HOSTNAME\
-	smtpd_banner="\$myhostname ESMTP Hi, I'm a Mail-in-a-Box (Ubuntu/Postfix; see https://mailinabox.email/)" \
+	smtpd_banner="\$myhostname ESMTP Ubuntu/Postfix; see https://dspeed.eu/hosting/mail)" \
 	mydestination=localhost
 
 # Tweak some queue settings:
@@ -110,7 +110,7 @@ cp conf/postfix_outgoing_mail_header_filters /etc/postfix/outgoing_mail_header_f
 # on the first received header line.  This may help reduce the spam score of email by
 # removing the 127.0.0.1 reference.
 sed -i "s/PRIMARY_HOSTNAME/$PRIMARY_HOSTNAME/" /etc/postfix/outgoing_mail_header_filters
-sed -i "s/PUBLIC_IP/$PUBLIC_IP/" /etc/postfix/outgoing_mail_header_filters
+sed -i "s/PUBLIC_IP/${PUBLIC_IPV6:-${PUBLIC_IP}}/" /etc/postfix/outgoing_mail_header_filters
 
 # Enable TLS on incoming connections. It is not required on port 25, allowing for opportunistic
 # encryption. On ports 465 and 587 it is mandatory (see above). Shared and non-shared settings are
