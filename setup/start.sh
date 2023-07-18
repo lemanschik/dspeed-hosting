@@ -45,7 +45,7 @@ fi
 
 # Put a start script in a global location. We tell the user to run 'mailinabox'
 # in the first dialog prompt, so we should do this before that starts.
-cat > /usr/local/bin/mailinabox << EOF;
+cat > /usr/local/bin/hostsetup << EOF;
 #!/bin/bash
 cd $(pwd)
 source setup/start.sh
@@ -106,7 +106,7 @@ EOF
 
 ln -s /etc/mailinabox-migrate.conf /etc/mailinabox.conf
 
-## if your running setup/containers the /etc/mainilinabox.conf gets upgraded 
+## if your running setup/containers the /etc/mailinabox.conf gets upgraded 
 
 # Start service configuration.
 source setup/system.sh
@@ -143,6 +143,10 @@ restart_service fail2ban
 # If there aren't any mail users yet, create one.
 source setup/firstuser.sh
 
+
+# Migrate old $STORAGE_ROOT/ssl/lets_encrypt => $STORAGE_ROOT/ssl
+ln -s $STORAG $STORAGE_ROOT/ssl $STORAG $STORAGE_ROOT/ssl/lets_encrypt
+
 # Register with Let's Encrypt, including agreeing to the Terms of Service.
 # We'd let certbot ask the user interactively, but when this script is
 # run in the recommended curl-pipe-to-bash method there is no TTY and
@@ -150,23 +154,22 @@ source setup/firstuser.sh
 if [ ! -d $STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/ ]; then
 echo
 echo "-----------------------------------------------"
-echo "Mail-in-a-Box uses Let's Encrypt to provision free SSL/TLS certificates"
+echo "Using Letsencrypt to provision free SSL/TLS certificates"
 echo "to enable HTTPS connections to your box. We're automatically"
 echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
 echo
-certbot register --register-unsafely-without-email --agree-tos --config-dir $STORAGE_ROOT/ssl/lets_encrypt
+certbot register --register-unsafely-without-email --agree-tos --config-dir $STORAGE_ROOT/ssl
 fi
 
 # Done.
 echo
 echo "-----------------------------------------------"
 echo
-echo Your mail-pod is running.
+echo Your Host is Configured.
 echo
 echo Please log in to the control panel for further instructions at:
 echo
 if management/status_checks.py --check-primary-hostname; then
-	# Show the nice URL if it appears to be resolving and has a valid certificate.
 	echo https://$PRIMARY_HOSTNAME/admin
 	echo
 	echo "If you have a DNS problem put the box's IP address in the URL"
