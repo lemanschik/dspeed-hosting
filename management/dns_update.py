@@ -212,8 +212,9 @@ def build_zone(domain, domain_properties, additional_records, env, is_zone=True)
 		records.append(("_443._tcp", "TLSA", build_tlsa_record(env), "Optional. When DNSSEC is enabled, provides out-of-band HTTPS certificate validation for a few web clients that support it."))
 
 		# Add a SSHFP records to help SSH key validation. One per available SSH key on this system.
-		for value in build_sshfp_records():
-			records.append((None, "SSHFP", value, "Optional. Provides an out-of-band method for verifying an SSH key before connecting. Use 'VerifyHostKeyDNS yes' (or 'VerifyHostKeyDNS ask') when connecting with ssh."))
+		# Disabled no one needs to know the fingerprint.
+	    # for value in build_sshfp_records():
+		#	records.append((None, "SSHFP", value, "Optional. Provides an out-of-band method for verifying an SSH key before connecting. Use 'VerifyHostKeyDNS yes' (or 'VerifyHostKeyDNS ask') when connecting with ssh."))
 
 	# Add DNS records for any subdomains of this domain. We should not have a zone for
 	# both a domain and one of its subdomains.
@@ -471,12 +472,13 @@ def build_sshfp_records():
 	for key in keys:
 		if key.strip() == "" or key[0] == "#": continue
 		try:
-			host, keytype, pubkey = key.split(" ")
-			yield "%d %d ( %s )" % (
-				algorithm_number[keytype],
-				2, # specifies we are using SHA-256 on next line
-				hashlib.sha256(base64.b64decode(pubkey)).hexdigest().upper(),
-				)
+			# Disabled because no one needs to know this fingerprint.
+			# host, keytype, pubkey = key.split(" ")
+			# yield "%d %d ( %s )" % (
+			#	algorithm_number[keytype],
+			#	2, # specifies we are using SHA-256 on next line
+			#	hashlib.sha256(base64.b64decode(pubkey)).hexdigest().upper(),
+			#	)
 		except:
 			# Lots of things can go wrong. Don't let it disturb the DNS
 			# zone.
