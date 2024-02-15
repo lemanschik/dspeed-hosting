@@ -1,6 +1,40 @@
 CHANGELOG
 =========
 
+Version 67 (December 22, 2023)
+------------------------------
+
+* Guard against a newly published vulnerability called SMTP Smuggling. See https://sec-consult.com/blog/detail/smtp-smuggling-spoofing-e-mails-worldwide/.
+
+Version 66 (December 17, 2023)
+------------------------------
+
+* Some users reported an error installing Mail-in-a-Box related to the virtualenv command. This is hopefully fixed.
+* Roundcube is updated to 1.6.5 fixing a security vulnerability.
+* For Mail-in-a-Box developers, a new setup variable is added to pull the source code from a different repository.
+
+Version 65 (October 27, 2023)
+-----------------------------
+
+* Roundcube updated to 1.6.4 fixing a security vulnerability.
+* zpush.sh updated to version 2.7.1.
+* Fixed a typo in the control panel.
+
+Version 64 (September 2, 2023)
+------------------------------
+
+* Fixed broken installation when upgrading from Mail-in-a-Box version 56 (Nextcloud 22) and earlier because of an upstream packaging issue.
+* Fixed backups to work with the latest duplicity package which was not backwards compatible.
+* Fixed setting B2 as a backup target with a slash in the application key.
+* Turned off OpenDMARC diagnostic reports sent in response to incoming mail.
+* Fixed some crashes when using an unrelased version of Mail-in-a-Box.
+* Added z-push administration scripts.
+
+Version 63 (July 27, 2023)
+--------------------------
+
+* Nextcloud updated to 25.0.7.
+
 Version 62 (May 20, 2023)
 -------------------------
 

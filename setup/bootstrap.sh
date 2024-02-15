@@ -23,7 +23,7 @@ if [ -z "$TAG" ]; then
 	if [ "$UBUNTU_VERSION" == "Ubuntu 22.04 LTS" ]; then
 		# This machine is running Ubuntu 22.04, which is supported by
 		# Mail-in-a-Box versions 60 and later.
-		TAG=v62
+		TAG=v67
 	elif [ "$UBUNTU_VERSION" == "Ubuntu 18.04 LTS" ]; then
 		# This machine is running Ubuntu 18.04, which is supported by
 		# Mail-in-a-Box versions 0.40 through 5x.
@@ -59,10 +59,14 @@ if [ ! -d $HOME/mailinabox ]; then
 		echo
 	fi
 
+	if [ "$SOURCE" == "" ]; then
+		SOURCE=https://github.com/mail-in-a-box/mailinabox
+	fi
+
 	echo Downloading Mail-in-a-Box $TAG. . .
 	git clone \
 		-b $TAG --depth 1 \
-		https://github.com/mail-in-a-box/mailinabox \
+		$SOURCE \
 		$HOME/mailinabox \
 		< /dev/null 2> /dev/null
 
@@ -73,7 +77,7 @@ fi
 cd $HOME/mailinabox
 
 # Update it.
-if [ "$TAG" != $(git describe) ]; then
+if [ "$TAG" != $(git describe --always) ]; then
 	echo Updating Mail-in-a-Box to $TAG . . .
 	git fetch --depth 1 --force --prune origin tag $TAG
 	if ! git checkout -q $TAG; then

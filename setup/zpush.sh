@@ -22,8 +22,8 @@ apt_install \
 phpenmod -v $PHP_VER imap
 
 # Copy Z-Push into place.
-VERSION=2.7.0
-TARGETHASH=a520bbdc1d637c5aac379611053457edd54f2bf0
+VERSION=2.7.1
+TARGETHASH=f15c566b1ad50de24f3f08f505f0c3d8155c2d0d
 needs_update=0 #NODOC
 if [ ! -f /usr/local/lib/z-push/version ]; then
 	needs_update=1 #NODOC
@@ -41,7 +41,15 @@ if [ $needs_update == 1 ]; then
 	mv /tmp/z-push/*/src /usr/local/lib/z-push
 	rm -rf /tmp/z-push.zip /tmp/z-push
 
+	# Create admin and top scripts with PHP_VER  
 	rm -f /usr/sbin/z-push-{admin,top}
+    echo '#!/bin/bash' > /usr/sbin/z-push-admin
+    echo php$PHP_VER /usr/local/lib/z-push/z-push-admin.php '"$@"' >> /usr/sbin/z-push-admin
+    chmod 755 /usr/sbin/z-push-admin
+    echo '#!/bin/bash' > /usr/sbin/z-push-top
+    echo php$PHP_VER /usr/local/lib/z-push/z-push-top.php '"$@"' >> /usr/sbin/z-push-top
+    chmod 755 /usr/sbin/z-push-top
+	
 	echo $VERSION > /usr/local/lib/z-push/version
 fi
 
