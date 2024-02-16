@@ -3,7 +3,7 @@
 ##########################
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/dspeed-hosting.conf # load global vars
 
 # ### Installing Nextcloud
 
@@ -185,13 +185,13 @@ if [ ! -d /usr/local/lib/owncloud/ ] || [[ ! ${CURRENT_NEXTCLOUD_VER} =~ ^$nextc
 		fi
 
 		if [[ ${CURRENT_NEXTCLOUD_VER} =~ ^[89] ]]; then
-			echo "Upgrades from Mail-in-a-Box prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 8 or 9) are not supported. Upgrade to Mail-in-a-Box version v0.30 first. Setup will continue, but skip the Nextcloud migration."
+			echo "Upgrades from DIREKTSPEED-Hosting prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 8 or 9) are not supported. Upgrade to DIREKTSPEED-Hosting version v0.30 first. Setup will continue, but skip the Nextcloud migration."
 			return 0
 		elif [[ ${CURRENT_NEXTCLOUD_VER} =~ ^1[012] ]]; then
-			echo "Upgrades from Mail-in-a-Box prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 10, 11 or 12) are not supported. Upgrade to Mail-in-a-Box version v0.30 first. Setup will continue, but skip the Nextcloud migration."
+			echo "Upgrades from DIREKTSPEED-Hosting prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 10, 11 or 12) are not supported. Upgrade to DIREKTSPEED-Hosting version v0.30 first. Setup will continue, but skip the Nextcloud migration."
 			return 0
 		elif [[ ${CURRENT_NEXTCLOUD_VER} =~ ^1[3456789] ]]; then
-			echo "Upgrades from Mail-in-a-Box prior to v60 with Nextcloud 19 or earlier are not supported. Upgrade to the latest Mail-in-a-Box version supported on your machine first. Setup will continue, but skip the Nextcloud migration."
+			echo "Upgrades from DIREKTSPEED-Hosting prior to v60 with Nextcloud 19 or earlier are not supported. Upgrade to the latest DIREKTSPEED-Hosting version supported on your machine first. Setup will continue, but skip the Nextcloud migration."
 			return 0
 		fi
 
@@ -291,7 +291,7 @@ fi
 # * trusted_domains is reset to localhost by autoconfig starting with ownCloud 8.1.1,
 #   so set it here. It also can change if the box's PRIMARY_HOSTNAME changes, so
 #   this will make sure it has the right value.
-# * Some settings weren't included in previous versions of Mail-in-a-Box.
+# * Some settings weren't included in previous versions .
 # * We need to set the timezone to the system timezone to allow fail2ban to ban
 #   users within the proper timeframe
 # * We need to set the logdateformat to something that will work correctly with fail2ban
@@ -375,7 +375,7 @@ tools/editconf.py /etc/php/$PHP_VER/cli/conf.d/10-opcache.ini -c ';' \
 
 # Migrate users_external data from <0.6.0 to version 3.0.0
 # (see https://github.com/nextcloud/user_external).
-# This version was probably in use in Mail-in-a-Box v0.41 (February 26, 2019) and earlier.
+# This version was probably in use in DIREKTSPEED-Hosting v0.41 (February 26, 2019) and earlier.
 # We moved to v0.6.3 in 193763f8. Ignore errors - maybe there are duplicated users with the
 # correct backend already.
 sqlite3 $STORAGE_ROOT/owncloud/owncloud.db "UPDATE oc_users_external SET backend='127.0.0.1';" || /bin/true
@@ -383,13 +383,13 @@ sqlite3 $STORAGE_ROOT/owncloud/owncloud.db "UPDATE oc_users_external SET backend
 # Set up a general cron job for Nextcloud.
 # Also add another job for Calendar updates, per advice in the Nextcloud docs
 # https://docs.nextcloud.com/server/24/admin_manual/groupware/calendar.html#background-jobs
-cat > /etc/cron.d/mailinabox-nextcloud << EOF;
+cat > /etc/cron.d/dspeed-hosting-nextcloud << EOF;
 #!/bin/bash
-# Mail-in-a-Box
+# DIREKTSPEED-Hosting
 */5 * * * *	root	sudo -u www-data php$PHP_VER -f /usr/local/lib/owncloud/cron.php
 */5 * * * *	root	sudo -u www-data php$PHP_VER -f /usr/local/lib/owncloud/occ dav:send-event-reminders
 EOF
-chmod +x /etc/cron.d/mailinabox-nextcloud
+chmod +x /etc/cron.d/dspeed-hosting-nextcloud
 
 # We also need to change the sending mode from background-job to occ.
 # Or else the reminders will just be sent as soon as possible when the background jobs run.

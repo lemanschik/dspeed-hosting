@@ -3,7 +3,7 @@
 # ----------------------
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/dspeed-hosting.conf # load global vars
 
 # ### Installing Roundcube
 
@@ -110,7 +110,7 @@ SECRET_KEY=$(dd if=/dev/urandom bs=1 count=32 2>/dev/null | base64 | sed s/=//g)
 cat > $RCM_CONFIG <<EOF;
 <?php
 /*
- * Do not edit. Written by Mail-in-a-Box. Regenerated on updates.
+ * Do not edit. Written by DIREKTSPEED-Hosting. Regenerated on updates.
  */
 \$config = array();
 \$config['log_dir'] = '/var/log/roundcubemail/';
@@ -131,7 +131,7 @@ cat > $RCM_CONFIG <<EOF;
      'verify_peer_name'  => false,
    ),
  );
-\$config['support_url'] = 'https://mailinabox.email/';
+\$config['support_url'] = 'https://hosting.dspeed.eu/';
 \$config['product_name'] = '$PRIMARY_HOSTNAME Webmail';
 \$config['cipher_method'] = 'AES-256-CBC'; # persistent login cookie and potentially other things
 \$config['des_key'] = '$SECRET_KEY'; # 37 characters -> ~256 bits for AES-256, see above
@@ -151,7 +151,7 @@ EOF
 # Configure CardDav
 cat > ${RCM_PLUGIN_DIR}/carddav/config.inc.php <<EOF;
 <?php
-/* Do not edit. Written by Mail-in-a-Box. Regenerated on updates. */
+/* Do not edit. Written by DIREKTSPEED-Hosting. Regenerated on updates. */
 \$prefs['_GLOBAL']['hide_preferences'] = true;
 \$prefs['_GLOBAL']['suppress_version_warning'] = true;
 \$prefs['ownCloud'] = array(
@@ -210,8 +210,8 @@ chown www-data:www-data $STORAGE_ROOT/mail/roundcube/roundcube.sqlite
 chmod 664 $STORAGE_ROOT/mail/roundcube/roundcube.sqlite
 
 # Patch the Roundcube code to eliminate an issue that causes postfix to reject our sqlite
-# user database (see https://github.com/mail-in-a-box/mailinabox/issues/2185)
-sed -i.miabold 's/^[^#]\+.\+PRAGMA journal_mode = WAL.\+$/#&/' \
+# user database (see https://github.com/direktspeed/hosting/issues/2185)
+sed -i.dspeedold 's/^[^#]\+.\+PRAGMA journal_mode = WAL.\+$/#&/' \
 /usr/local/lib/roundcubemail/program/lib/Roundcube/db/sqlite.php
 
 # Because Roundcube wants to set the PRAGMA we just deleted from the source, we apply it here

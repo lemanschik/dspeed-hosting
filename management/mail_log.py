@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/dspeed-hosting/env/bin/python
 import argparse
 import datetime
 import gzip
@@ -802,7 +802,7 @@ if __name__ == "__main__":
         description="Scan the mail log files for interesting data. By default, this script "
                     "shows today's incoming and outgoing mail statistics. This script was ("
                     "re)written for the Mail-in-a-box email server."
-                    "https://github.com/mail-in-a-box/mailinabox",
+                    "https://github.com/direktspeed/hosting",
         add_help=False
     )
 

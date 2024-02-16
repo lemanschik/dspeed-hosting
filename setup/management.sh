@@ -1,9 +1,9 @@
 #!/bin/bash
 
 source setup/functions.sh
-source /etc/mailinabox.conf # load global vars
+source /etc/dspeed-hosting.conf # load global vars
 
-echo "Installing Mail-in-a-Box system management daemon..."
+echo "Installing DIREKTSPEED-Hosting system management daemon..."
 
 # DEPENDENCIES
 
@@ -23,7 +23,7 @@ hide_output pip3 install --upgrade b2sdk boto3
 
 # Create a virtualenv for the installation of Python 3 packages
 # used by the management daemon.
-inst_dir=/usr/local/lib/mailinabox
+inst_dir=/usr/local/lib/dspeed-hosting
 mkdir -p $inst_dir
 venv=$inst_dir/env
 if [ ! -d $venv ]; then
@@ -95,29 +95,29 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_TYPE=en_US.UTF-8
 
-mkdir -p /var/lib/mailinabox
-tr -cd '[:xdigit:]' < /dev/urandom | head -c 32 > /var/lib/mailinabox/api.key
-chmod 640 /var/lib/mailinabox/api.key
+mkdir -p /var/lib/dspeed-hosting
+tr -cd '[:xdigit:]' < /dev/urandom | head -c 32 > /var/lib/dspeed-hosting/api.key
+chmod 640 /var/lib/dspeed-hosting/api.key
 
 source $venv/bin/activate
 export PYTHONPATH=$(pwd)/management
 exec gunicorn -b localhost:10222 -w 1 --timeout 630 wsgi:app
 EOF
 chmod +x $inst_dir/start
-cp --remove-destination conf/mailinabox.service /lib/systemd/system/mailinabox.service # target was previously a symlink so remove it first
-hide_output systemctl link -f /lib/systemd/system/mailinabox.service
+cp --remove-destination conf/dspeed-hosting.service /lib/systemd/system/dspeed-hosting.service # target was previously a symlink so remove it first
+hide_output systemctl link -f /lib/systemd/system/dspeed-hosting.service
 hide_output systemctl daemon-reload
-hide_output systemctl enable mailinabox.service
+hide_output systemctl enable dspeed-hosting.service
 
 # Perform nightly tasks at 3am in system time: take a backup, run
 # status checks and email the administrator any changes.
 
-minute=$((RANDOM % 60))  # avoid overloading mailinabox.email
-cat > /etc/cron.d/mailinabox-nightly << EOF;
-# Mail-in-a-Box --- Do not edit / will be overwritten on update.
+minute=$((RANDOM % 60))  # avoid overloading hosting.dspeed.eu
+cat > /etc/cron.d/dspeed-hosting-nightly << EOF;
+# DIREKTSPEED-Hosting --- Do not edit / will be overwritten on update.
 # Run nightly tasks: backup, status checks.
 $minute 3 * * *	root	(cd $(pwd) && management/daily_tasks.sh)
 EOF
 
 # Start the management server.
-restart_service mailinabox
+restart_service dspeed-hosting

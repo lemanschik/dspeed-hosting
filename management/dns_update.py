@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/dspeed-hosting/env/bin/python
 
 # Creates DNS zone files for all of the domains of all of the mail users
 # and mail aliases and restarts nsd.
@@ -145,10 +145,13 @@ def build_zones(env):
 	auto_domains = web_domains - set(get_web_domains(env, include_auto=False))
 	domains |= auto_domains # www redirects not included in the initial list, see above
 
+	arr_primary_domain = env["PRIMARY_HOSTNAME"].split(".")
+	p_tld = arr_primary_domain[-2] + "." + arr_primary_domain[-1]
+
 	# Add ns1/ns2+PRIMARY_HOSTNAME which must also have A/AAAA records
 	# when the box is acting as authoritative DNS server for its domains.
-	for ns in ("ns1", "ns2"):
-		d = ns + "." + env["PRIMARY_HOSTNAME"]
+	for ns in ("ns1", "ns2", "hostmaster"):
+		d = ns + "." + p_tld
 		domains.add(d)
 		auto_domains.add(d)
 
@@ -177,7 +180,8 @@ def build_zones(env):
 
 def build_zone(domain, domain_properties, additional_records, env, is_zone=True):
 	records = []
-
+	arr_primary_domain = env["PRIMARY_HOSTNAME"].split(".")
+	p_tld = arr_primary_domain[-2] + "." + arr_primary_domain[-1]
 	# For top-level zones, define the authoritative name servers.
 	#
 	# Normally we are our own nameservers. Some TLDs require two distinct IP addresses,
@@ -188,12 +192,12 @@ def build_zone(domain, domain_properties, additional_records, env, is_zone=True)
 	# is managed outside of the box.
 	if is_zone:
 		# Obligatory NS record to ns1.PRIMARY_HOSTNAME.
-		records.append((None,  "NS",  "ns1.%s." % env["PRIMARY_HOSTNAME"], False))
+		# records.append((None,  "NS",  "ns1.%s." % env["PRIMARY_HOSTNAME"], False))
 
 		# NS record to ns2.PRIMARY_HOSTNAME or whatever the user overrides.
 		# User may provide one or more additional nameservers
 		secondary_ns_list = get_secondary_dns(additional_records, mode="NS") \
-			or ["ns2." + env["PRIMARY_HOSTNAME"]]
+			or ["ns1." + p_tld,"ns2." + p_tld]
 		for secondary_ns in secondary_ns_list:
 			records.append((None,  "NS", secondary_ns+'.', False))
 
@@ -345,7 +349,7 @@ def build_zone(domain, domain_properties, additional_records, env, is_zone=True)
 		# instead of '+' and '/' which are not allowed in an MTA-STS policy id) but then just take its
 		# first 20 characters, which is more than sufficient to change whenever the policy file changes
 		# (and ensures any '=' padding at the end of the base64 encoding is dropped).
-		with open("/var/lib/mailinabox/mta-sts.txt", "rb") as f:
+		with open("/var/lib/dspeed-hosting/mta-sts.txt", "rb") as f:
 			mta_sts_policy_id = base64.b64encode(hashlib.sha1(f.read()).digest(), altchars=b"AA").decode("ascii")[0:20]
 		mta_sts_records.extend([
 			("_mta-sts", "TXT", "v=STSv1; id=" + mta_sts_policy_id, "Optional. Part of the MTA-STS policy for incoming mail. If set, a MTA-STS policy must also be published.")
@@ -398,7 +402,7 @@ def build_tlsa_record(env):
 	# Thanks to http://blog.huque.com/2012/10/dnssec-and-certificates.html
 	# and https://community.letsencrypt.org/t/please-avoid-3-0-1-and-3-0-2-dane-tlsa-records-with-le-certificates/7022
 	# for explaining all of this! Also see https://tools.ietf.org/html/rfc6698#section-2.1
-	# and https://github.com/mail-in-a-box/mailinabox/issues/268#issuecomment-167160243.
+	# and https://github.com/direktspeed/hosting/issues/268#issuecomment-167160243.
 	#
 	# There are several criteria. We used to use "3 0 1" criteria, which
 	# meant to pin a leaf (3) certificate (0) with SHA256 hash (1). But
@@ -407,7 +411,7 @@ def build_tlsa_record(env):
 	# a leaf certificate (3)'s subject public key (1) with SHA256 hash (1).
 	# The subject public key is the public key portion of the private key
 	# that generated the CSR that generated the certificate. Since we
-	# generate a private key once the first time Mail-in-a-Box is set up
+	# generate a private key once the first time DIREKTSPEED-Hosting is set up
 	# and reuse it for all subsequent certificates, the TLSA record will
 	# remain valid indefinitely.
 
@@ -498,12 +502,14 @@ def write_nsd_zone(domain, zonefile, records, env, force):
 	# A hash of the available DNSSEC keys are added in a comment so that when
 	# the keys change we force a re-generation of the zone which triggers
 	# re-signing it.
+	#
+	# use ns1.domain and not primary_domain
 
 	zone = """
 $ORIGIN {domain}.
 $TTL 86400          ; default time to live
 
-@ IN SOA ns1.{primary_domain}. hostmaster.{primary_domain}. (
+@ IN SOA ns1.{primary_domain_tld}. hostmaster.{primary_domain_tld}. (
            __SERIAL__     ; serial number
            7200     ; Refresh (secondary nameserver update interval)
            3600     ; Retry (when refresh fails, how often to try again, should be lower than the refresh)
@@ -511,9 +517,11 @@ $TTL 86400          ; default time to live
            86400    ; Negative TTL (how long negative responses are cached)
            )
 """
-
+	
+	arr_primary_domain = env["PRIMARY_HOSTNAME"].split(".")
+	p_tld = arr_primary_domain[-2] + "." + arr_primary_domain[-1]
 	# Replace replacement strings.
-	zone = zone.format(domain=domain, primary_domain=env["PRIMARY_HOSTNAME"])
+	zone = zone.format(domain=domain, primary_domain_tld=p_tld)
 
 	# Add records.
 	for subdomain, querytype, value, explanation in records:

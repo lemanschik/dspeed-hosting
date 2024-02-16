@@ -1,14 +1,14 @@
-#!/usr/local/lib/mailinabox/env/bin/python3
+#!/usr/local/lib/dspeed-hosting/env/bin/python3
 #
 # The API can be accessed on the command line, e.g. use `curl` like so:
-#    curl --user $(</var/lib/mailinabox/api.key): http://localhost:10222/mail/users
+#    curl --user $(</var/lib/dspeed-hosting/api.key): http://localhost:10222/mail/users
 #
-# During development, you can start the Mail-in-a-Box control panel
+# During development, you can start the DIREKTSPEED-Hosting control panel
 # by running this script, e.g.:
 #
-# service mailinabox stop # stop the system process
+# service dspeed-hosting stop # stop the system process
 # DEBUG=1 management/daemon.py
-# service mailinabox start # when done debugging, start it up again
+# service dspeed-hosting start # when done debugging, start it up again
 
 import os, os.path, re, json, time
 import multiprocessing.pool, subprocess
@@ -544,9 +544,9 @@ def system_version():
 @app.route('/system/latest-upstream-version', methods=["POST"])
 @authorized_personnel_only
 def system_latest_upstream_version():
-	from status_checks import get_latest_miab_version
+	from status_checks import get_latest_dspeed_version
 	try:
-		return get_latest_miab_version()
+		return get_latest_dspeed_version()
 	except Exception as e:
 		return (str(e), 500)
 
@@ -705,7 +705,7 @@ def munin_cgi(filename):
 	munin-cgi-graph has several failure modes. Some write HTTP Status headers and
 	others return nonzero exit codes.
 	Situating munin_cgi between the user-agent and munin-cgi-graph enables keeping
-	the cgi script behind mailinabox's auth mechanisms and avoids additional
+	the cgi script behind dspeed-hosting's auth mechanisms and avoids additional
 	support infrastructure like spawn-fcgi.
 	"""
 
@@ -758,7 +758,7 @@ def log_failed_login(request):
 
 	# We need to add a timestamp to the log message, otherwise /dev/log will eat the "duplicate"
 	# message.
-	app.logger.warning( "Mail-in-a-Box Management Daemon: Failed login attempt from ip %s - timestamp %s" % (ip, time.time()))
+	app.logger.warning( "DIREKTSPEED-Hosting Management Daemon: Failed login attempt from ip %s - timestamp %s" % (ip, time.time()))
 
 
 # APP

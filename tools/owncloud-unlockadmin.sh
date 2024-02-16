@@ -6,7 +6,7 @@
 # Run this at your own risk. This is for testing & experimentation
 # purpopses only. After this point you are on your own.
 
-source /etc/mailinabox.conf # load global vars
+source /etc/dspeed-hosting.conf # load global vars
 
 ADMIN=$(./mail.py user admins | head -n 1)
 test -z "$1" || ADMIN=$1 

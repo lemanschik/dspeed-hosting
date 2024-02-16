@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 #
-# This is a tool Josh uses on his box serving mailinabox.email to parse the nginx
-# access log to see how many people are installing Mail-in-a-Box each day, by
+# This is a tool Josh uses on his box serving hosting.dspeed.eu to parse the nginx
+# access log to see how many people are installing DIREKTSPEED-Hosting each day, by
 # looking at accesses to the bootstrap.sh script (which is currently at the URL
 # .../setup.sh).
 
 import re, glob, gzip, os.path, json
 import dateutil.parser
 
-outfn = "/home/user-data/www/mailinabox.email/install-stats.json"
+outfn = "/home/user-data/www/hosting.dspeed.eu/install-stats.json"
 
 # Make a unique list of (date, ip address) pairs so we don't double-count
 # accesses that are for the same install.

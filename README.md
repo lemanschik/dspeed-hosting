@@ -1,11 +1,11 @@
-Mail-in-a-Box
+DIREKTSPEED-Hosting
 =============
 
-By [@JoshData](https://github.com/JoshData) and [contributors](https://github.com/mail-in-a-box/mailinabox/graphs/contributors).
+By [@JoshData](https://github.com/JoshData) and [contributors](https://github.com/direktspeed/hosting/graphs/contributors).
 
-Mail-in-a-Box helps individuals take back control of their email by defining a one-click, easy-to-deploy SMTP+everything else server: a mail server in a box.
+DIREKTSPEED-Hosting helps individuals take back control of their email by defining a one-click, easy-to-deploy SMTP+everything else server: a mail server in a box.
 
-**Please see [https://mailinabox.email](https://mailinabox.email) for the project's website and setup guide!**
+**Please see [https://hosting.dspeed.eu](https://hosting.dspeed.eu) for the project's website and setup guide!**
 
 * * *
 
@@ -23,7 +23,7 @@ Additionally, this project has a [Code of Conduct](CODE_OF_CONDUCT.md), which su
 In The Box
 ----------
 
-Mail-in-a-Box turns a fresh Ubuntu 22.04 LTS 64-bit machine into a working mail server by installing and configuring various components.
+DIREKTSPEED-Hosting turns a fresh Ubuntu 22.04 LTS 64-bit machine into a working mail server by installing and configuring various components.
 
 It is a one-click email appliance. There are no user-configurable setup options. It "just works."
 
@@ -44,22 +44,22 @@ It also includes system management tools:
 
 Internationalized domain names are supported and configured easily (but SMTPUTF8 is not supported, unfortunately).
 
-It also supports static website hosting since the box is serving HTTPS anyway. (To serve a website for your domains elsewhere, just add a custom DNS "A" record in you Mail-in-a-Box's control panel to point domains to another server.)
+It also supports static website hosting since the box is serving HTTPS anyway. (To serve a website for your domains elsewhere, just add a custom DNS "A" record in you DIREKTSPEED-Hosting's control panel to point domains to another server.)
 
-For more information on how Mail-in-a-Box handles your privacy, see the [security details page](security.md).
+For more information on how DIREKTSPEED-Hosting handles your privacy, see the [security details page](security.md).
 
 
 Installation
 ------------
 
-See the [setup guide](https://mailinabox.email/guide.html) for detailed, user-friendly instructions.
+See the [setup guide](https://hosting.dspeed.eu/guide.html) for detailed, user-friendly instructions.
 
 For experts, start with a completely fresh (really, I mean it) Ubuntu 22.04 LTS 64-bit machine. On the machine...
 
 Clone this repository and checkout the tag corresponding to the most recent release:
 
-	$ git clone https://github.com/mail-in-a-box/mailinabox
-	$ cd mailinabox
+	$ git clone https://github.com/direktspeed/hosting
+	$ cd dspeed-hosting
 	$ git checkout v67
 
 Begin the installation.
@@ -70,16 +70,16 @@ The installation will install, uninstall, and configure packages to turn the mac
 
 For help, DO NOT contact Josh directly --- I don't do tech support by email or tweet (no exceptions).
 
-Post your question on the [discussion forum](https://discourse.mailinabox.email/) instead, where maintainers and Mail-in-a-Box users may be able to help you.
+Post your question on the [discussion forum](https://discourse.hosting.dspeed.eu/) instead, where maintainers and DIREKTSPEED-Hosting users may be able to help you.
 
-Note that while we want everything to "just work," we can't control the rest of the Internet. Other mail services might block or spam-filter email sent from your Mail-in-a-Box.
-This is a challenge faced by everyone who runs their own mail server, with or without Mail-in-a-Box. See our discussion forum for tips about that.
+Note that while we want everything to "just work," we can't control the rest of the Internet. Other mail services might block or spam-filter email sent from your DIREKTSPEED-Hosting.
+This is a challenge faced by everyone who runs their own mail server, with or without DIREKTSPEED-Hosting. See our discussion forum for tips about that.
 
 
 Contributing and Development
 ----------------------------
 
-Mail-in-a-Box is an open source project. Your contributions and pull requests are welcome. See [CONTRIBUTING](CONTRIBUTING.md) to get started. 
+DIREKTSPEED-Hosting is an open source project. Your contributions and pull requests are welcome. See [CONTRIBUTING](CONTRIBUTING.md) to get started. 
 
 
 The Acknowledgements
@@ -87,14 +87,16 @@ The Acknowledgements
 
 This project was inspired in part by the ["NSA-proof your email in 2 hours"](http://sealedabstract.com/code/nsa-proof-your-e-mail-in-2-hours/) blog post by Drew Crawford, [Sovereign](https://github.com/sovereign/sovereign) by Alex Payne, and conversations with <a href="https://twitter.com/shevski" target="_blank">@shevski</a>, <a href="https://github.com/konklone" target="_blank">@konklone</a>, and <a href="https://github.com/gregelin" target="_blank">@GregElin</a>.
 
-Mail-in-a-Box is similar to [iRedMail](http://www.iredmail.org/) and [Modoboa](https://github.com/tonioo/modoboa).
+DIREKTSPEED-Hosting is similar to [iRedMail](http://www.iredmail.org/) and [Modoboa](https://github.com/tonioo/modoboa).
 
+## Troubleshooting
+If you copy this files from a windows pc run:
 
-The History
------------
-
-* In 2007 I wrote a relatively popular Mozilla Thunderbird extension that added client-side SPF and DKIM checks to mail to warn users about possible phishing: [add-on page](https://addons.mozilla.org/en-us/thunderbird/addon/sender-verification-anti-phish/), [source](https://github.com/JoshData/thunderbird-spf).
-* In August 2013 I began Mail-in-a-Box by combining my own mail server configuration with the setup in ["NSA-proof your email in 2 hours"](http://sealedabstract.com/code/nsa-proof-your-e-mail-in-2-hours/) and making the setup steps reproducible with bash scripts.
-* Mail-in-a-Box was a semifinalist in the 2014 [Knight News Challenge](https://www.newschallenge.org/challenge/2014/submissions/mail-in-a-box), but it was not selected as a winner.
-* Mail-in-a-Box hit the front page of Hacker News in [April](https://news.ycombinator.com/item?id=7634514) 2014, [September](https://news.ycombinator.com/item?id=8276171) 2014, [May](https://news.ycombinator.com/item?id=9624267) 2015, and [November](https://news.ycombinator.com/item?id=13050500) 2016.
-* FastCompany mentioned Mail-in-a-Box a [roundup of privacy projects](http://www.fastcompany.com/3047645/your-own-private-cloud) on June 26, 2015.
+```bash
+sed -i -e ’s/\r$//‘ */*.py
+sed -i -e ’s/\r$//‘ */*.sh
+sed -i -e ’s/\r$//‘ */*/*.sh
+sed -i -e ’s/\r$//‘ tools/*
+chmod +x tools/*
+chmod +x */*.py */*.sh
+```

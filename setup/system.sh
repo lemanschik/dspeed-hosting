@@ -1,4 +1,4 @@
-source /etc/mailinabox.conf
+source /etc/dspeed-hosting.conf
 source setup/functions.sh # load our functions
 
 # Basic System Configuration
@@ -79,7 +79,7 @@ fi
 
 # Set the systemd journal log retention from infinite to 10 days,
 # since over time the logs take up a large amount of space.
-# (See https://discourse.mailinabox.email/t/journalctl-reclaim-space-on-small-mailinabox/6728/11.)
+# (See https://discourse.hosting.dspeed.eu/t/journalctl-reclaim-space-on-small-dspeed-hosting/6728/11.)
 tools/editconf.py /etc/systemd/journald.conf MaxRetentionSec=10day
 
 # ### Add PPAs.
@@ -114,7 +114,7 @@ echo Updating system packages...
 hide_output apt-get update
 apt_get_quiet upgrade
 
-# Old kernels pile up over time and take up a lot of disk space, and because of Mail-in-a-Box
+# Old kernels pile up over time and take up a lot of disk space, and because 
 # changes there may be other packages that are no longer needed. Clear out anything apt knows
 # is safe to delete.
 
@@ -166,7 +166,7 @@ fi
 if [ -z "${NONINTERACTIVE:-}" ]; then
 	if [ ! -f /etc/timezone ] || [ ! -z ${FIRST_TIME_SETUP:-} ]; then
 		# If the file is missing or this is the user's first time running
-		# Mail-in-a-Box setup, run the interactive timezone configuration
+		# DIREKTSPEED-Hosting setup, run the interactive timezone configuration
 		# tool.
 		dpkg-reconfigure tzdata
 		restart_service rsyslog
@@ -238,9 +238,9 @@ pollinate  -q -r
 # Between these two, we really ought to be all set.
 
 # We need an ssh key to store backups via rsync, if it doesn't exist create one
-if [ ! -f /root/.ssh/id_rsa_miab ]; then
+if [ ! -f /root/.ssh/id_rsa_dspeed ]; then
 	echo 'Creating SSH key for backup…'
-	ssh-keygen -t rsa -b 2048 -a 100 -f /root/.ssh/id_rsa_miab -N '' -q
+	ssh-keygen -t rsa -b 2048 -a 100 -f /root/.ssh/id_rsa_dspeed -N '' -q
 fi
 
 # ### Package maintenance
@@ -364,7 +364,7 @@ cat conf/fail2ban/jails.conf \
     | sed "s/PUBLIC_IPV6/$PUBLIC_IPV6/g" \
 	| sed "s/PUBLIC_IP/$PUBLIC_IP/g" \
 	| sed "s#STORAGE_ROOT#$STORAGE_ROOT#" \
-	> /etc/fail2ban/jail.d/mailinabox.conf
+	> /etc/fail2ban/jail.d/dspeed-hosting.conf
 cp -f conf/fail2ban/filter.d/* /etc/fail2ban/filter.d/
 
 # On first installation, the log files that the jails look at don't all exist.

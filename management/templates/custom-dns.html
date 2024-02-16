@@ -59,9 +59,9 @@
 
 <div style="text-align: right; font-size; 90%; margin-top: 1em;">
   sort by:
-  <a href="#" onclick="window.miab_custom_dns_data_sort_order='qname'; show_current_custom_dns_update_after_sort(); return false;">domain name</a>
+  <a href="#" onclick="window.dspeed_custom_dns_data_sort_order='qname'; show_current_custom_dns_update_after_sort(); return false;">domain name</a>
   |
-  <a href="#" onclick="window.miab_custom_dns_data_sort_order='created'; show_current_custom_dns_update_after_sort(); return false;">created</a>
+  <a href="#" onclick="window.dspeed_custom_dns_data_sort_order='created'; show_current_custom_dns_update_after_sort(); return false;">created</a>
 </div>
 <table id="custom-dns-current" class="table" style="width: auto; display: none; margin-top: 0;">
   <thead>
@@ -198,14 +198,14 @@ function show_current_custom_dns() {
         $('#custom-dns-current').fadeIn();
       else
         $('#custom-dns-current').fadeOut();
-      window.miab_custom_dns_data = data;
+      window.dspeed_custom_dns_data = data;
       show_current_custom_dns_update_after_sort();
     });
 }
 
 function show_current_custom_dns_update_after_sort() {
-      var data = window.miab_custom_dns_data;
-      var sort_key = window.miab_custom_dns_data_sort_order || "qname";
+      var data = window.dspeed_custom_dns_data;
+      var sort_key = window.dspeed_custom_dns_data_sort_order || "qname";
 
       data.sort(function(a, b) { return a["sort-order"][sort_key] - b["sort-order"][sort_key] });
 

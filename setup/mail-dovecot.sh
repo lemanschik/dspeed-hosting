@@ -16,11 +16,11 @@
 # using the LMTP protocol.
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/dspeed-hosting.conf # load global vars
 
 
 # Install packages for dovecot. These are all core dovecot plugins,
-# but dovecot-lucene is packaged by *us* in the Mail-in-a-Box PPA,
+# but dovecot-lucene is packaged by *us* in the DIREKTSPEED-Hosting PPA,
 # not by Ubuntu.
 
 echo "Installing Dovecot (IMAP server)..."
@@ -101,7 +101,7 @@ sed -i "s/#port = 110/port = 0/" /etc/dovecot/conf.d/10-master.conf
 # this are minimal. But for good measure, let's go to 4 minutes to halve the
 # bandwidth and number of times the device's networking might be woken up.
 # The risk is that if the connection is silent for too long it might be reset
-# by a peer. See [#129](https://github.com/mail-in-a-box/mailinabox/issues/129)
+# by a peer. See [#129](https://github.com/direktspeed/hosting/issues/129)
 # and [How bad is IMAP IDLE](http://razor.occams.info/blog/2014/08/09/how-bad-is-imap-idle/).
 tools/editconf.py /etc/dovecot/conf.d/20-imap.conf \
 	imap_idle_notify_interval="4 mins"

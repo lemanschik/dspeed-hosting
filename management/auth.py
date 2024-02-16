@@ -7,8 +7,8 @@ import utils
 from mailconfig import get_mail_password, get_mail_user_privileges
 from mfa import get_hash_mfa_state, validate_auth_mfa
 
-DEFAULT_KEY_PATH   = '/var/lib/mailinabox/api.key'
-DEFAULT_AUTH_REALM = 'Mail-in-a-Box Management Server'
+DEFAULT_KEY_PATH   = '/var/lib/dspeed-hosting/api.key'
+DEFAULT_AUTH_REALM = 'DIREKTSPEED-Hosting Management Server'
 
 class AuthService:
 	def __init__(self):

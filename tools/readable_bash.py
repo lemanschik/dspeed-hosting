@@ -116,7 +116,7 @@ def generate_documentation():
         <div class="col-xs-12">
         <h1>Build Your Own Mail Server From Scratch</h1>
         <p>Here&rsquo;s how you can build your own mail server from scratch.</p>
-        <p>This document is generated automatically from <a href="https://mailinabox.email">Mail-in-a-Box</a>&rsquo;s setup script <a href="https://github.com/mail-in-a-box/mailinabox">source code</a>.</p>
+        <p>This document is generated automatically from <a href="https://hosting.dspeed.eu">DIREKTSPEED-Hosting</a>&rsquo;s setup script <a href="https://github.com/direktspeed/hosting">source code</a>.</p>
         <hr>
       </div>
     </div>
@@ -276,7 +276,7 @@ class OtherLine(Grammar):
 	def value(self):
 		if self.string.strip() == "": return ""
 		if "source setup/functions.sh" in self.string: return ""
-		if "source /etc/mailinabox.conf" in self.string: return ""
+		if "source /etc/dspeed-hosting.conf" in self.string: return ""
 		return "<pre class='shell'><div>" + recode_bash(self.string.strip()) + "</div></pre>\n"
 
 class BashElement(Grammar):
@@ -401,7 +401,7 @@ class BashScript(Grammar):
 
 	@staticmethod
 	def parse(fn):
-		if fn in ("setup/functions.sh", "/etc/mailinabox.conf"): return ""
+		if fn in ("setup/functions.sh", "/etc/dspeed-hosting.conf"): return ""
 		with open(fn, "r") as f:
 			string = f.read()
 
@@ -415,7 +415,7 @@ class BashScript(Grammar):
 		result = parser.parse_string(string)
 
 		v = "<div class='row'><div class='col-xs-12 sourcefile'>view the bash source for the following section at <a href=\"%s\">%s</a></div></div>\n" \
-			 % ("https://github.com/mail-in-a-box/mailinabox/tree/master/" + fn, fn)
+			 % ("https://github.com/direktspeed/hosting/tree/master/" + fn, fn)
 
 		mode = 0
 		for item in result.value():
@@ -464,7 +464,7 @@ class BashScript(Grammar):
 
 		v = re.sub(r"(\$?)PRIMARY_HOSTNAME", r"<b>box.yourdomain.com</b>", v)
 		v = re.sub(r"\$STORAGE_ROOT", r"<b>$STORE</b>", v)
-		v = v.replace("`pwd`",  "<code><b>/path/to/mailinabox</b></code>")
+		v = v.replace("`pwd`",  "<code><b>/path/to/dspeed-hosting</b></code>")
 
 		return v
 

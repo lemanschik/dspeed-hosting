@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 #
 # This is a command-line script for calling management APIs
-# on the Mail-in-a-Box control panel backend. The script
-# reads /var/lib/mailinabox/api.key for the backend's
+# on the DIREKTSPEED-Hosting control panel backend. The script
+# reads /var/lib/dspeed-hosting/api.key for the backend's
 # root API key. This file is readable only by root, so this
 # tool can only be used as root.
 
@@ -23,7 +23,7 @@ def mgmt(cmd, data=None, is_json=False):
 				print(e.read().decode("utf8"))
 			except:
 				pass
-			print("The management daemon refused access. The API key file may be out of sync. Try 'service mailinabox restart'.", file=sys.stderr)
+			print("The management daemon refused access. The API key file may be out of sync. Try 'service dspeed-hosting restart'.", file=sys.stderr)
 		elif hasattr(e, 'read'):
 			print(e.read().decode('utf8'), file=sys.stderr)
 		else:
@@ -47,12 +47,12 @@ def read_password():
     return first
 
 def setup_key_auth(mgmt_uri):
-	with open('/var/lib/mailinabox/api.key', 'r') as f:
+	with open('/var/lib/dspeed-hosting/api.key', 'r') as f:
 		key = f.read().strip()
 
 	auth_handler = urllib.request.HTTPBasicAuthHandler()
 	auth_handler.add_password(
-		realm='Mail-in-a-Box Management Server',
+		realm='DIREKTSPEED-Hosting Management Server',
 		uri=mgmt_uri,
 		user=key,
 		passwd='')

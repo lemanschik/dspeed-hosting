@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Migrates any file structures, database schemas, etc. between versions of Mail-in-a-Box.
+# Migrates any file structures, database schemas, etc. between versions .
 
 # We have to be careful here that any dependencies are already installed in the previous
 # version since this script runs before all other aspects of the setup script.
@@ -46,7 +46,7 @@ def migration_2(env):
 		os.unlink(fn)
 
 def migration_3(env):
-	# Move the migration ID from /etc/mailinabox.conf to $STORAGE_ROOT/mailinabox.version
+	# Move the migration ID from /etc/dspeed-hosting.conf to $STORAGE_ROOT/dspeed-hosting.version
 	# so that the ID stays with the data files that it describes the format of. The writing
 	# of the file will be handled by the main function.
 	pass
@@ -203,13 +203,13 @@ def get_current_migration():
 		ver = next_ver
 
 def run_migrations():
-	if not os.access("/etc/mailinabox.conf", os.W_OK, effective_ids=True):
+	if not os.access("/etc/dspeed-hosting.conf", os.W_OK, effective_ids=True):
 		print("This script must be run as root.", file=sys.stderr)
 		sys.exit(1)
 
 	env = load_environment()
 
-	migration_id_file = os.path.join(env['STORAGE_ROOT'], 'mailinabox.version')
+	migration_id_file = os.path.join(env['STORAGE_ROOT'], 'dspeed-hosting.version')
 	migration_id = None
 	if os.path.exists(migration_id_file):
 		with open(migration_id_file) as f:
@@ -236,7 +236,7 @@ def run_migrations():
 			break
 
 		print()
-		print("Running migration to Mail-in-a-Box #%d..." % next_ver)
+		print("Running migration to DIREKTSPEED-Hosting #%d..." % next_ver)
 
 		try:
 			migration_func(env)

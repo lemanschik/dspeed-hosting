@@ -28,28 +28,28 @@ export LC_TYPE=en_US.UTF-8
 export NCURSES_NO_UTF8_ACS=1
 
 # Recall the last settings used if we're running this a second time.
-if [ -f /etc/mailinabox.conf ]; then
+if [ -f /etc/dspeed-hosting.conf ]; then
 	# Run any system migrations before proceeding. Since this is a second run,
 	# we assume we have Python already installed.
 	setup/migrate.py --migrate || exit 1
 
 	# Load the old .conf file to get existing configuration options loaded
 	# into variables with a DEFAULT_ prefix.
-	cat /etc/mailinabox.conf | sed s/^/DEFAULT_/ > /tmp/mailinabox.prev.conf
-	source /tmp/mailinabox.prev.conf
-	rm -f /tmp/mailinabox.prev.conf
+	cat /etc/dspeed-hosting.conf | sed s/^/DEFAULT_/ > /tmp/dspeed-hosting.prev.conf
+	source /tmp/dspeed-hosting.prev.conf
+	rm -f /tmp/dspeed-hosting.prev.conf
 else
 	FIRST_TIME_SETUP=1
 fi
 
-# Put a start script in a global location. We tell the user to run 'mailinabox'
+# Put a start script in a global location. We tell the user to run 'dspeed-hosting'
 # in the first dialog prompt, so we should do this before that starts.
-cat > /usr/local/bin/mailinabox << EOF;
+cat > /usr/local/bin/dspeed-hosting << EOF;
 #!/bin/bash
 cd $(pwd)
 source setup/start.sh
 EOF
-chmod +x /usr/local/bin/mailinabox
+chmod +x /usr/local/bin/dspeed-hosting
 
 # Ask the user for the PRIMARY_HOSTNAME, PUBLIC_IP, and PUBLIC_IPV6,
 # if values have not already been set in environment variables. When running
@@ -71,10 +71,10 @@ fi
 # Set the directory and all of its parent directories' permissions to world
 # readable since it holds files owned by different processes.
 #
-# If the STORAGE_ROOT is missing the mailinabox.version file that lists a
+# If the STORAGE_ROOT is missing the dspeed-hosting.version file that lists a
 # migration (schema) number for the files stored there, assume this is a fresh
 # installation to that directory and write the file to contain the current
-# migration number for this version of Mail-in-a-Box.
+# migration number for this version .
 if ! id -u $STORAGE_USER >/dev/null 2>&1; then
 	useradd -m $STORAGE_USER
 fi
@@ -83,16 +83,16 @@ if [ ! -d $STORAGE_ROOT ]; then
 fi
 f=$STORAGE_ROOT
 while [[ $f != / ]]; do chmod a+rx "$f"; f=$(dirname "$f"); done;
-if [ ! -f $STORAGE_ROOT/mailinabox.version ]; then
-	setup/migrate.py --current > $STORAGE_ROOT/mailinabox.version
-	chown $STORAGE_USER:$STORAGE_USER $STORAGE_ROOT/mailinabox.version
+if [ ! -f $STORAGE_ROOT/dspeed-hosting.version ]; then
+	setup/migrate.py --current > $STORAGE_ROOT/dspeed-hosting.version
+	chown $STORAGE_USER:$STORAGE_USER $STORAGE_ROOT/dspeed-hosting.version
 fi
 
-# Save the global options in /etc/mailinabox.conf so that standalone
+# Save the global options in /etc/dspeed-hosting.conf so that standalone
 # tools know where to look for data. The default MTA_STS_MODE setting
 # is blank unless set by an environment variable, but see web.sh for
 # how that is interpreted.
-cat > /etc/mailinabox.conf << EOF;
+cat > /etc/dspeed-hosting.conf << EOF;
 STORAGE_USER=$STORAGE_USER
 STORAGE_ROOT=$STORAGE_ROOT
 PRIMARY_HOSTNAME=$PRIMARY_HOSTNAME
@@ -122,7 +122,7 @@ source setup/munin.sh
 # Wait for the management daemon to start...
 until nc -z -w 4 127.0.0.1 10222
 do
-	echo Waiting for the Mail-in-a-Box management daemon to start...
+	echo Waiting for the DIREKTSPEED-Hosting management daemon to start...
 	sleep 2
 done
 
@@ -145,7 +145,7 @@ source setup/firstuser.sh
 if [ ! -d $STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/ ]; then
 echo
 echo "-----------------------------------------------"
-echo "Mail-in-a-Box uses Let's Encrypt to provision free SSL/TLS certificates"
+echo "DIREKTSPEED-Hosting uses Let's Encrypt to provision free SSL/TLS certificates"
 echo "to enable HTTPS connections to your box. We're automatically"
 echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
 echo
@@ -156,7 +156,7 @@ fi
 echo
 echo "-----------------------------------------------"
 echo
-echo Your Mail-in-a-Box is running.
+echo Your DIREKTSPEED-Hosting is running.
 echo
 echo Please log in to the control panel for further instructions at:
 echo

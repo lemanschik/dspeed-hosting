@@ -22,7 +22,7 @@
 # provides Perfect Forward Secrecy.
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/dspeed-hosting.conf # load global vars
 
 # Show a status line if we are going to take any action in this file.
 if  [ ! -f /usr/bin/openssl ] \

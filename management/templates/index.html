@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{hostname}} - Mail-in-a-Box Control Panel</title>
+        <title>{{hostname}} - DIREKTSPEED-Hosting Control Panel</title>
 
         <meta name="robots" content="noindex, nofollow">
 
@@ -204,7 +204,7 @@
       <hr>
 
       <footer>
-        <p>This is a <a href="https://mailinabox.email">Mail-in-a-Box</a>.</p>
+        <p>This is a <a href="https://hosting.dspeed.eu">DIREKTSPEED-Hosting</a>.</p>
       </footer>
     </div> <!-- /container -->
 
@@ -409,9 +409,9 @@ function do_logout() {
   // Forget the token.
   api_credentials = null;
   if (typeof localStorage != 'undefined')
-    localStorage.removeItem("miab-cp-credentials");
+    localStorage.removeItem("dspeed-cp-credentials");
   if (typeof sessionStorage != 'undefined')
-    sessionStorage.removeItem("miab-cp-credentials");
+    sessionStorage.removeItem("dspeed-cp-credentials");
 
   // Return to the start.
   show_panel('login');
@@ -443,10 +443,10 @@ window.onhashchange = function() {
 $(function() {
   // Recall saved user credentials.
   try {
-    if (typeof sessionStorage != 'undefined' && sessionStorage.getItem("miab-cp-credentials"))
-      api_credentials = JSON.parse(sessionStorage.getItem("miab-cp-credentials"));
-    else if (typeof localStorage != 'undefined' && localStorage.getItem("miab-cp-credentials"))
-      api_credentials = JSON.parse(localStorage.getItem("miab-cp-credentials"));
+    if (typeof sessionStorage != 'undefined' && sessionStorage.getItem("dspeed-cp-credentials"))
+      api_credentials = JSON.parse(sessionStorage.getItem("dspeed-cp-credentials"));
+    else if (typeof localStorage != 'undefined' && localStorage.getItem("dspeed-cp-credentials"))
+      api_credentials = JSON.parse(localStorage.getItem("dspeed-cp-credentials"));
   } catch (_) {
   }
 
