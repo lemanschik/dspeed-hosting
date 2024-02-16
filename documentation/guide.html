@@ -1,0 +1,422 @@
+<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Mail-in-a-Box Setup Guide</title>
+    <meta name="description" content="Setup instructions for Mail-in-a-Box. Take back control of your email with this easy-to-deploy mail server in a box." />
+
+    <meta property="og:site_name" content="Mail-in-a-Box">
+    <meta name="twitter:creator" content="@joshdata" />
+    <meta name="twitter:creator:id" content="352686442" />
+    <meta name="twitter:site" content="@mailinabox" />
+    <meta name="twitter:site:id" content="2612357965" />
+
+    <meta name="og:image" content="https://mailinabox.email/static/logo.png" />
+    <link rel="vcs-git" href="https://github.com/mail-in-a-box/mailinabox.email" title="code for Mail-in-a-Box website" />
+    <link rel="icon" type="image/png" href="/static/logo_small.png">
+    <link rel="apple-touch-icon" type="image/png" href="/static/logo_small.png">
+
+
+    <link rel="stylesheet" href="static/vendor/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="guides.css" />
+    <style>
+		.tld-list {
+			margin: 0;
+			list-style: none;
+			font-size: 80%;
+			font-family: sans-serif;
+		}
+		.tld-list:after, .tld-list > div {
+			content: "";
+			display: block;
+			clear: both;
+		}
+		.tld-list > div {
+			margin-bottom: 1em;
+		}
+		.tld-list li {
+			float: left;
+			margin-right: .5em;
+			border: 1px solid #DDD;
+			padding: 0 2px;
+		}
+		.tld-list li.heading {
+			border: none;
+			font-weight: bold;
+		}
+		.tld-list i {
+			margin-left: 2px;
+			color: #53A;
+		}
+    </style>
+</head>
+<body data-spy="scroll" data-target="#nav">
+	<a href="https://github.com/mail-in-a-box/mailinabox.email/blob/main/guide.html" class="visible-md visible-lg"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+	<div id="back">
+		<div class="container">
+			<a href="/">
+				&lt; Back to Mail-in-a-Box
+			</a>
+		</div>
+	</div>
+
+	<div class="container">
+    	<div class="row">
+    		<div id="sidebar" class="col-sm-4 col-md-3">
+				<div id="nav" class="small sticky-top">
+					<p style="margin: 0 0 .5em 14px; border-bottom: 1px solid #CCC; color: #888;">Table of Contents</p>
+			        <ul class="nav flex-column">
+			          <li class="nav-item"><a class="nav-link" href="#checklist">Checklist</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#video">Video Tutorial</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#domain-name-registration">Getting a Domain Name</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#hostname">The Box&rsquo;s Hostname</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#machine">The Machine</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#glue-records">Domain Name Glue Records</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#domain-name-nameservers">Domain Name Nameservers</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#setup">Machine Setup</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#admin">Administrative Page</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#checks">Systems Checks</a></li>
+			        </ul>
+				</div>
+    		</div>
+
+    		<div class="col-sm-8 col-md-9">
+
+    			<div style="padding-left: 1em; max-width: 55em">
+	    			<h1>Mail-in-a-Box Setup Guide</h1>
+
+	    			<h2 id="checklist">Pre-flight Checklist</h2>
+
+	    			<dl>
+	    				<dt>Can I run my Mail-in-a-Box at home?</dt>
+	    				<dd>No. Computers on most residential networks are blocked from sending mail both on the sending end (e.g. your ISP blocking port 25) and on the receiving end (by <a href="https://www.spamhaus.org/pbl/">blacklists</a>) because residential computers are all too often hijacked to send spam. Your home IP address is also probably dynamic and lacks configurable &ldquo;reverse DNS.&rdquo; If <em>any</em> of these apply to you, you&rsquo;ll need to use a virtual machine in the cloud.</dd>
+
+	    				<dt>What will it cost?</dt>
+	    				<dd>This is going to cost you about $12 per month. Most of the cost is in having a (virtual) machine connected to the Internet 24/7. You can divide this among friends and share your Mail-in-a-Box if you&rsquo;d like to split it up.</dd>
+
+	    				<dt>Do I have time?</dt>
+	    				<dd>There&rsquo;s also your time. Once a Mail-in-a-Box is set up, we hope it &ldquo;just works&rdquo; but when you are your own system administrator you must be prepared to resolve issues as they arise.</dd>
+
+	    				<dt>How will this affect my website? (Advanced.)</dt>
+	    				<dd>If your website is just HTML pages and static files, you can copy it onto your Mail-in-a-Box for a really simple hosting solution. If you have a website already, be aware that your Mail-in-a-Box wants to take over your DNS so that it can configure it correctly for email, and we recommend you let the box do that, but you can configure the DNS to keep your website on another machine. You may also need to configure <a href="advanced-configuration.html#relaying">relaying</a> for outbound transactional email.</p>
+	    				</dd>
+
+	    				<dt>Can I modify my box after / use my box for something else too? (Advanced.)</dt>
+	    				<dd>No. Mail-in-a-Box must be installed on a <u>fresh</u> machine that will be <u>dedicated</u> to Mail-in-a-Box, and you cannot modify the box after installation (configuration changes will get overwritten by the box&rsquo;s self-management). If you are looking for something more advanced, try <a href="https://www.iredmail.org/">iRedMail</a>, <a href="https://github.com/sovereign/sovereign">Sovereign</a>, or <a href="https://github.com/tonioo/modoboa">Modoboa</a>.</dd>
+
+	    			</dl>
+
+	    			<h2 id="video">Video Guide</h2>
+
+	    			<p>There is a <a href="/">video version of this tutorial on the homepage</a>.</p>
+
+
+	    			<h2 id="domain-name-registration">Your Domain Name</h2>
+
+	    			<p>The first step in setting up a Mail-in-a-Box is to pick your new email address. An email address has two parts. The part after the @-sign is the <b>domain name</b>. Each domain name is owned by someone, and you are going to be the owner of your own.</p>
+
+	    				<p class="example">Josh&rsquo;s email address is <script>document.write("tj".split("").reverse().join(""));</script>@occams.info. His domain name is <code>occams.info</code>.</p>
+
+	    			<p>Some domain names have quirks, depending on which &ldquo;top-level domain&rdquo; (TLD) it is under. Please consult this list:</p>
+
+	    			<ul class="tld-list">
+	    				<li class="heading">Known good TLDs:</li>
+	    				<li>.com</li>
+	    				<li>.email</li>
+	    				<li>.fund</li>
+	    				<li>.guide</li>
+	    				<li>.info</li>
+	    				<li>.io</li>
+	    				<li>.me</li>
+	    				<li>.net</li>
+	    				<li>.uk</li>
+	    				<li>.me.uk</li>
+	    				<li>.us</li>
+	    			</ul>
+
+	    			<ul class="tld-list">
+	    				<li class="heading">Probably good TLDs:</li>
+	    				<li>.computer</li>
+	    				<li>.cz</li>
+	    				<li>.eu</li>
+	    				<li>.im</li>
+	    				<li>.name</li>
+	    				<li>.network</li>
+	    				<li>.nz</li>
+	    			</ul>
+
+	    			<ul class="tld-list">
+	    				<li class="heading">Avoid these:</li>
+	   	    			<li title="may require two nameservers, may not support DNSSEC">.at</li>
+	   	    			<li title="requires two nameservers">.ca <a href="https://discourse.mailinabox.email/t/why-is-a-ca-domain-listed-as-avoid/1008/2"><i class="glyphicon glyphicon-comment" title="Link to discussion thread."></i></a></li>
+	    				<li title="requires two nameservers">.de</li>
+					<li title="may require two nameservers, will not support nameservers on sub-domain">.gg .je .as</li>
+					<li title="will not support nameservers on a 4th level sub-domain">.cx</li>
+	    				<li title="requires own A record in DNS; each NS needs own PTR resource record">.is <a href="https://discourse.mailinabox.email/t/answered-no-you-cant-anyone-have-a-is-domain-working-with-miab-dns/1077"</a><i class="glyphicon glyphicon-comment" title="Link to discussion thread."></i></a> <a href="https://www.isnic.is/en/host/req"><i class="glyphicon glyphicon-globe" title="Link to registry requirements."></i></a></li>
+	    				<li title="requires two nameservers">.nl <a href="https://discourse.mailinabox.email/t/nameservers-setup-problems/572/3"</a><i class="glyphicon glyphicon-comment" title="Link to discussion thread."></i></a></li>
+					<li title="SpamAssassin suspicious nTLDs">.bid .buzz .click .cyou .date .faith .fit .fun .gdn .icu .life .online .ooo .pro .review .site .space .stream .top .trade .vip .work .world .xyz</li>
+
+		    			<div><i class="glyphicon glyphicon-comment"></i> indicates link to discussion. <i class="glyphicon glyphicon-globe" title="Link to registry requirements."></i> indicates link to TLD registry requirements.</li>
+	    			</ul>
+
+	    			<p>Next you will register your new domain name. It&rsquo;s about $17/year, depending on the TLD. Buy basically anything you want, taking into account the TLD recommendations above. This will be the start of your new identity.</p>
+
+	    			<p>I recommend you use <a href="https://www.gandi.net/domain">Gandi.net</a> to register your domain name because I know it works well for Mail-in-a-Box. You can use other domain name registrars besides Gandi, but support for DNSSEC is not good everywhere. (DNSSEC is an optional security feature on Mail-in-a-Box. It&rsquo;s nice to have but things will work just fine without it.) </p>
+
+	    			<p>Not all TLDs support DNSSEC either. If you will use Gandi, you should check their <a href="https://wiki.gandi.net/en/domains/dnssec">list of TLDs that support DNSSEC</a>. For a more complete list of TLDs and their DNSSEC support, see ICANN Research <a href="https://stats.research.icann.org/dns/tld_report/">TLD DNSSEC Report</a>.</p>
+
+	    			<p>After you buy the domain name you&rsquo;ll need to set it up, but that comes later so keep reading. Note that a Mail-in-a-Box box can handle the email for multiple domain names too &mdash; more on that later.</p>
+
+	    			<h2 id="hostname">Your Box Has A Name</h2>
+
+	    			<p>Every machine connected to the Internet has a <b>name</b> and an <b>address</b>.</p>
+
+	    			<p>The <b>address</b>, an IP address, is like a telephone number. It&rsquo;s made up of numbers and is assigned to you by whoever provides Internet access to your mail server (that&rsquo;s coming in the next section).</p>
+
+	    			<p>The name &mdash; called a <b>hostname</b> &mdash; is something you decide. It can be a domain name you own or any &ldquo;subdomain&rdquo; of a domain you own.</p>
+
+	    			<p>For your Mail-in-a-Box, we recommend naming your box <code>box</code> + <code>.</code> + your domain name.</p>
+
+	    				<p class="example">Josh&rsquo;s Mail-in-a-Box is named <code>box.occams.info</code>. This is its hostname.</p>
+
+	    			<p>Your Mail-in-a-Box may handle the email for multiple domain names, but the box has a single name.</p>
+
+	    			<p>Your box&rsquo;s name <strong>CANNOT be a domain name that you intend to serve a website on</strong> from another web hosting service. We strongly suggest using a subdomain like <code>box</code>, as in the example above, so that you are able to use the main domain name for a website hosted from another web hosting service if you choose.</p>
+
+	    			<h2 id="machine">The Machine</h2>
+
+	    			<h3>Finding a cloud service provider</h3>
+
+	    			<p>Now you will rent a machine, or a virtual part of a machine, somewhere in &ldquo;the cloud.&rdquo; We&rsquo;ll call this machine your box. We recommend going over to <a href="https://www.linode.com/">Linode</a>, <a href="https://www.1and1.com/">1&amp;1</a>, or <a href="https://rimuhosting.com/order/v2orderstart.jsp">Rimuhosting.com</a>. (Most cloud providers will do, but not Amazon Web Services because its network is often blocked to prevent users from sending spam.)</p>
+
+					<p><strong>You must choose the <code>Ubuntu 22.04 x64 (server edition)</code> operating system and a machine with at least 512 MB of RAM.</strong> This setup currently costs around $5/month, depending on which provider you choose. We recommend you to use a box with 1 GB of RAM which costs around $10/month.</p>
+
+				<p>If you choose Digital Ocean, your machine is called a &ldquo;droplet&rdquo; and you <strong>must</strong> name your droplet the same as its hostname.</p>
+
+					<p class="example">Josh&rsquo;s droplet would be named <code>box.occams.info</code> (if Josh used Digital Ocean).</p>
+
+	    			<p>If you have a choice, choose a location for your machine that is near you &mdash; it&rsquo;ll be faster! And if disabling IPv6 is an option, disable it.</p>
+
+	    			<h3>Reverse DNS</h3>
+
+	    			<p>Each cloud provider will have different instructions for setting up &ldquo;reverse DNS.&rdquo; You <strong>must</strong> follow your cloud provider&rsquo;s instructions for setting the reverse DNS of your box to your box&rsquo;s hostname.</p>
+
+	    			<p>If you are using Digital Ocean, your reverse DNS is already done. (They automatically set it to what you entered as your droplet&rsquo;s name, which per the instructions above was your box&rsquo;s hostname.) Linode&rsquo;s instructions are <a href="https://www.linode.com/docs/networking/dns/setting-reverse-dns">here</a>, but you may not be able to set the reverse DNS on Linode until after you have finished the rest of this guide (Linode only accepts reverse DNS changes once the forward DNS is working, which your box will handle by the end of this guide). 1&amp;1&rsquo;s instructions are <a href="https://help.1and1.com/servers-c37684/dedicated-server-linux-c37687/organization-via-control-panel-c37695/configure-a-reverse-map-a606240.html">here</a>.</p>
+
+	    				<p class="example">Josh&rsquo;s box&rsquo;s reverse DNS is set to the same as the box&rsquo;s hostname: <code>box.occams.info</code>.</p>
+
+	    			<h3>Locate the machine&rsquo;s IP address</h3>
+
+	    			<p>Your cloud provider will also now tell you the IP address of your machine. It looks like 123.123.123.123.</p>
+
+	    				<p class="example">Josh&rsquo;s box&rsquo;s IP address is <code>94.76.202.152</code>.</p>
+
+					<p>Sometimes you might be assigned an IP address that is on a spam block list. You may wish to use a tool such as <a href="https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a94.76.202.152&run=toolpage#">MXToolbox</a> to ensure your IP address is not on these block lists. If you find your assigned IP is on a blacklist, you might have luck requesting a "clean" IP from your provider, or creating a new host if you're using a VPS service.</p>
+
+	    			<h3>Firewall settings</h3>
+
+	    			<p>If your machine is behind a hardware firewall (or virtual equivalent, such as an AWS security group), ensure that the following ports are open: 22 (SSH), 25 (SMTP), 53 (DNS; must be open for both tcp &amp; udp), 80 (HTTP), 443 (HTTPS), 465 (SMTP submission), 993 (IMAP), 995 (POP) and 4190 (Sieve). It doesn&rsquo;t hurt to block other ports, but your box will take care of that itself by configuring a software firewall on the machine itself.</p>
+
+
+	    			<h2 id="glue-records">Domain Name Configuration &mdash; Glue Records</h2>
+
+	    			<p>We&rsquo;ll now go back to your domain name registrar to associate your domain name with your box&rsquo;s IP address. This has two parts: glue records and nameservers.</p>
+
+	    			<div class="alert alert-warning" role="alert">
+	    				<p><strong>Advanced Usage with External DNS:</strong> 
+	    				If you are using an external DNS provider, e.g. if you already have a website on your domain name, you may skip this section. However, we recommend that you continue and let your box take over your DNS so that it can set it up securely and correctly for email. <strong>If you choose to skip this section, pay special attention to &ldquo;System status &amp; DNS&rdquo; toward the end.</strong></p>
+	    			</div>
+
+	    			<h3>Glue Records</h3>
+
+	    			<p>The association between your domain name and IP address is . . . complicated. The domain name system (DNS) is a global, distributed network of machines that turn domain names into IP addresses. Your registrar and your box play a role in the domain name system.</p>
+
+	    			<p>The way this works varies from registrar to registrar, but it goes something like this:</p>
+
+	    			<p>First, you&rsquo;ll create two &ldquo;glue records.&rdquo; The purpose of glue records is to say that your box is becoming a part of the domain name system. These records go by different names at different registrars, so also look out for &ldquo;hostnames&rdquo; or &ldquo;child nameservers.&rdquo;. This will <em>not</em> be found in a DNS control panel. [<a href="https://docs.gandi.net/en/domain_names/advanced_users/glue_records.html">Gandi instructions</a> | <a href="https://support.godaddy.com/help/article/664/setting-nameservers-for-your-domain-names">GoDaddy instructions</a>]</p>
+
+	    			<p>A glue record consists of a hostname and an IP address. You will need two: <code>ns1.</code> + your box&rsquo;s hostname and <code>ns2.</code> + your box&rsquo;s hostname. (They stand for &ldquo;nameserver one&rdquo; and &ldquo;nameserver two&rdquo;.) For the IP address, enter the IP address of your box.</p>
+
+	    				<p class="example">Josh&rsquo;s box&rsquo;s hostname is box.occams.info. The two glue records are for <code>ns1.box.occams.info</code> and <code>ns2.box.occams.info</code> and list the box&rsquo;s IP address of <code>94.76.202.152</code>.</p>
+
+	    			<p>It looks something like what&rsquo;s shown here:</p>
+
+	    			<img src="static/domain_hostnames.png" title="Glue Record Configuration at Your Domain Registrar" class="img-fluid figure"/>
+
+	    			<p>Your registrar may ask you to enter these hostnames with the domain name part omitted, as mine did in this case. If so, enter the part of the hostname up to the domain name.</p>
+
+	    				<p class="example">Josh&rsquo;s domain name is occams.info. The two glue hostnames are <code>ns1.box.occams.info</code> and <code>ns2.box.occams.info</code>, but his registrar asks him to enter them with &ldquo;.occams.info&rdquo; omitted leaving just <code>ns1.box</code> and <code>ns2.box</code>.</p>
+
+	    			<p><strong>If your Mail-in-a-Box is handling mail for multiple domains, you only do glue records once (for your first domain name). Additional domain names skip this step.</strong></p>
+
+					<p>Some domain name TLDs and some registrars will require that you enter two glue records with different IP addresses. That won&rsquo;t work for Mail-in-a-Box&rsquo;s typical setup since your machine will only have one IP address. You can either <a href="https://anydomain.net/setting-up-secondary-dns-for-mail-in-a-box/">set up secondary DNS servers</a> to get around this limitation (it&rsquo;s not hard, but it&rsquo;s more work), or use a different domain name under a different TLD or a different registrar.</p>
+
+					<p>If you are using Namecheap, check out <a href="https://github.com/mail-in-a-box/mailinabox/issues/204#issuecomment-209021280">this comment</a> on how to enter the information in their control panel.</p>
+
+			        <h2 id="domain-name-nameservers">Domain Name Configuration &mdash; Nameservers</h2>
+
+	    			<div class="alert alert-warning" role="alert">
+	    				<p><strong>Advanced Usage with External DNS:</strong> 
+	    				If you skipped the previous section, you will skip this one too and follow your external DNS provider&rsquo;s instructions instead. <strong>If you skip this section, pay special attention to &ldquo;System status &amp; DNS&rdquo; toward the end.</strong></p>
+	    			</div>
+
+	    			<h3>Nameservers</h3>
+
+	    			<p>Now you&rsquo;ll tell your domain registrar that your domain name&rsquo;s nameservers are <code>ns1.</code> + your box&rsquo;s hostname and <code>ns2.</code> + your box&rsquo;s hostname.</p>
+
+	    			<p>You will usually be turning off the registrar&rsquo;s provided nameservers and turning on custom servers. This is usually <i>not</i> found in the domain name&rsquo;s DNS control panel. You will be disabling that control panel.</p>
+
+	    			<p>Here&rsquo;s what that looks like in my registrar:</p>
+
+	    			<img src="static/domain_nameservers.png" title="Nameserver Configuration at Your Domain Registrar" class="img-fluid figure"/>
+
+	    			<p>Don&rsquo;t worry if you are confused about what this all means. It is complicated &mdash; we all get confused at this point.</p>
+
+	    			<p>If you add another domain name to your box later, this section is repeated for each domain name you associate with your box. All domain names on the box will use the exact same two nameservers. So if you used <code>ns1.yourdomain.com</code> for your first domain, use exactly the same thing for your second domain name. (You do NOT use <code>ns1.yourseconddomain.com</code>, etc.)</p>
+
+	    			<h3>DNSSEC DS Record</h3>
+
+	    			<p>DNSSEC adds a security layer on top of DNS, in the same way that HTTPS adds a security layer to HTTP. It is not necessary, but it is recommended. When enabled, mail between Mail-in-a-Boxes will always be encrypted.</p>
+
+	    			<p>Your box&rsquo;s control panel will tell you to come back to your domain name registrar at the end to configure the DNSSEC DS record. It&rsquo;s not something the box can set up on its own, but you also can&rsquo;t configure it until after the box itself is set up &mdash; so you will come back to this.</p>
+
+
+					<h2 id="setup">Setting Up The Box</h2>
+
+					<p>You will now have to log into your running box using SSH. Your cloud provider will probably give you some instructions on how to do that. If your personal computer has a command line, you'll be doing something like this:</p>
+
+					<pre>ssh -i yourkey.pem ubuntu@10.20.30.40</pre>
+
+					<div class="alert alert-warning">
+						<strong>Legal note!</strong> Mail-in-a-Box is made available per the <a href="https://github.com/mail-in-a-box/mailinabox/blob/main/LICENSE">CC0 public domain dedication</a>. By running Mail-in-a-Box, you will invoke scripts that use Let’s Encrypt to provision TLS certificates per the <a href="https://letsencrypt.org/repository/" target="_blank">Let’s Encrypt Subscriber Agreement(s) & Terms of Services</a>. Please be sure you accept the terms in both documents before proceeding.
+					</div>
+
+					<p>Once inside, you will now get the Mail-in-a-Box code onto your box and start its setup. Copy and paste this into your terminal and hit <key>enter</key>:</p>
+
+					<pre>curl -s https://mailinabox.email/setup.sh | sudo -E bash</pre>
+					
+					<div class="alert alert-warning" role="alert">
+	    				<p><strong>Advanced:</strong> To change the default location where Mail-in-a-Box stores all of its data, you can set an environment variable named 'STORAGE_ROOT' <em>before</em> running the setup script.</p>
+						<br>
+						<code>export STORAGE_ROOT=/your/desired/path</code>
+					</div>
+
+					<p>You will be asked to enter the email address you want and a few other configuration questions. At the end you will be asked for a password for your email address.</p>
+
+					<p>This password will be used to login to webmail, the administrative interface, and on your devices. It will <strong>not</strong> be used to log onto your Mail-in-a-Box server using SSH (that&rsquo;s what you did above).</p>
+
+					<p>It is always safe to re-run the setup, either because something went wrong or you just want to see it again. You can do so by following two the steps above again or just running <code>sudo mailinabox</code> from the command line.</p>
+
+					<p>When it comes time to update to a newer release of Mail-in-a-Box, you&rsquo;ll literally just run the above two commands again (<code>ssh ...</code> and then <code>curl ...</code>, as above) on your existing machine.</p>
+
+
+					<h2 id="admin">The Administrative Interface</h2>
+
+					<h3>Connecting for the First Time</h3>
+
+					<p>When the setup script is done running, you&rsquo;ll been given instructions on how to access your box&rsquo;s web-based administrative control panel:</p>
+
+					<pre>Your Mail-in-a-Box is running.
+
+Please log in to the control panel for further instructions at:
+
+    https://94.76.202.152/admin
+
+You will be alerted that the website has an invalid certificate. Check that
+the certificate fingerprint matches:
+
+C0:9B:FF:04:2B:2D:8F:47:5A:8B:D5:88:B7:05:D3:4B:6C:22:80:5F</pre>
+
+					<p>Your SSL certificate is not yet signed so you will get a security warning when you visit the administrative URL. There is a way to proceed securely if you use Mozilla Firefox.</p>
+
+					<ol>
+					<li>Open the URL in Firefox. Firefox will say <em>This Connection is Untrusted</em>.</li>
+					<li>Click on <em>I Understand the Risks</em>.</li>
+					<li>Click on <em>Add Exception</em>.</li>
+					<li>Click on <em>View</em>.</li>
+					<li>Compare the <em>SHA1 Fingerprint</em> in Firefox to the fingerpint reported by Mail-in-a-Box&rsquo;s setup script in your SSH connection (see the example above). If they match, it is safe to continue.</li>
+					<li>Click on <em>Close</em>.</li>
+					<li>Click on <em>Confirm Security Exception</em>. It is safe (and convenient!) to permanently store the exception.</li>
+					</ol>
+
+					<p>The page will then load securely.</p>
+
+					<p>You can also get a signed SSL certificate later (see below) so you don&rsquo;t have to go through these steps.</p>
+
+					<h3>System status &amp; DNS</h3>
+
+					<p>Log in to the administrative control panel with the email address and password that you provided during Mail-in-a-Box&rsquo;s setup. Proceed to the System Status Checks.</p>
+
+					<p>These checks will guide you toward finishing your setup:</p>
+
+					<p>The control panel will check if your DNS is set up correctly. Things related to the domain name system sometimes take several minutes, or much longer, to update. This is called DNS propagation. Wait for the control panel to report no DNS problems &mdash; reload the page every 15 minutes or so. If problems persist, something went wrong.</p>
+
+					<p>DNSSEC is an optional step that adds additional security to DNS. The control panel will walk you through setting up DNSSEC as well. You will need to go back to your domain name registrar and enter additional information.</p>
+
+					<p><em>If you skipped the DNS settings earlier, you should now go to the DNS (Custom/External) &gt; External DNS section of the control panel and copy the DNS records into your own DNS control panel.</em></p>
+
+					<h3>Getting a signed TLS (SSL) certificate</h3>
+
+					<p>Use the TLS Certificates page of the control panel to provision a free TLS (SSL) certificate from <a href="https://letsencrypt.org">Let&rsquo;s Encrypt</a>. If you don't want to use Let's Encrypt, you can also add any other certificate and import it in the box. The box will help you by generating a private key. Just follow the instructions given in the control panel. </p>
+
+					<h3>Checking your email</h3>
+
+					<p>The administrative control panel will provide instructions for how to check your email with webmail, IMAP/SMTP, or Exchange/ActiveSync.</p>
+
+					<p>You can also add or remove additional email accounts and mail aliases (forwarders).</p>
+
+					<h3>Backup status</h3>
+
+					<p>Here you can configure backups, and get an overview of what has been backed up to date. Backups are encrypted, and are therefore safe to store anywhere you like.</p>
+
+					<p>By default, backups are stored on the box.  You can also configure rsync to copy those local backups to another server, or store backups entirely on Amazon S3, or another compatible service (e.g. <a href="https://www.digitalocean.com/products/spaces/">DigitalOcean Spaces</a>). With S3, no backups are stored locally, preserving some disk space on the box.</p>
+
+					<p>
+					However you store your backups, you must copy the encryption password file described on the Backup Status screen somewhere safe!  Backups cannot be decrypted without the backup key!
+					</p>
+
+					<h3>Advanced tools</h3>
+
+					<p>The administrative control panel also helps you with...</p>
+
+					<ul>
+					<li>Setting up contact and calendar synchronization</li>
+					<li>Publishing a static website</li>
+					<li>Setting custom DNS records, e.g. if you run a website on the same domain name but on another machine</li>
+					</ul>
+
+					<h2 id="maintenance">Keeping Your Box Humming</h2>
+
+					<p>Follow <a href="https://twitter.com/Mailinabox">@Mailinabox</a> on Twitter so you know when we post any updates to Mail-in-a-Box.</p>
+
+					<p>Check your box&rsquo;s control panel periodically to see that the System Status Checks report everything is OK. Your box will also automatically email you whenever anything changes in the status checks.</p>
+
+					<p>Remember that it is always safe to re-run the setup script by typing <code>sudo mailinabox</code> at the SSH terminal prompt.</p>
+
+					<p>Finally, consult the <a href="maintenance.html">Maintenance Guide</a> for further questions.</p>
+
+
+					<h2 id="checks">Systems Checks</h2>
+
+					<p>If you want to double-check that your system is configured correctly, here are some tools:</p>
+
+					<ul>
+						<li>DNS: <a href="https://pingability.com/zoneinfo.jsp">pingability.com/zoneinfo</a></li>
+						<li>DKIM and SPF: <a href="https://dkimvalidator.com">dkimvalidator.com</a></li>
+						<li>SSL: <a href="https://www.ssllabs.com/ssltest/analyze.html">ssllabs.com</a></li>
+					</ul>
+
+					<div class="hidden-xs" style="height: 200px"> </div>
+
+    		</div>
+
+    	</div>
+	</div>
+
+	<script src="static/vendor/jquery.js"> </script>
+    <script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

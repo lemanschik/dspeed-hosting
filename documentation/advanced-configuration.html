@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Mail-in-a-Box Advanced Configuration Guide</title>
+    <meta name="description" content="Advanced configuration information for Mail-in-a-Box. Take back control of your email with this easy-to-deploy mail server in a box." />
+
+    <meta property="og:site_name" content="Mail-in-a-Box">
+    <meta name="twitter:creator" content="@joshdata" />
+    <meta name="twitter:creator:id" content="352686442" />
+    <meta name="twitter:site" content="@mailinabox" />
+    <meta name="twitter:site:id" content="2612357965" />
+
+    <meta name="og:image" content="https://mailinabox.email/static/logo.png" />
+    <link rel="vcs-git" href="https://github.com/mail-in-a-box/mailinabox.email" title="code for Mail-in-a-Box website" />
+    <link rel="icon" type="image/png" href="/static/logo_small.png">
+    <link rel="apple-touch-icon" type="image/png" href="/static/logo_small.png">
+
+    <link rel="stylesheet" href="static/vendor/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="guides.css" />
+</head>
+<body data-spy="scroll" data-target="#nav">
+	<a href="https://github.com/mail-in-a-box/mailinabox.email/blob/main/advanced-configuration.html" class="visible-md visible-lg"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+	<div id="back">
+		<div class="container">
+			<a href="/">
+				&lt; Back to Mail-in-a-Box
+			</a>
+		</div>
+	</div>
+
+	<div class="container">
+    	<div class="row">
+    		<div id="sidebar" class="col-sm-4 col-md-3">
+				<div id="nav" class="small sticky-top">
+					<p style="margin: 0 0 .5em 14px; border-bottom: 1px solid #CCC; color: #888;">Table of Contents</p>
+			        <ul class="nav flex-column">
+			          <li class="nav-item"><a class="nav-link" href="#relaying">Relaying For Other Machines</a></li>
+			          <li class="nav-item"><a class="nav-link" href="#filtering">Sieve Filtering</a></li>
+			        </ul>
+				</div>
+    		</div>
+
+    		<div class="col-sm-8 col-md-9">
+
+    			<div style="padding-left: 1em; max-width: 55em">
+	    			<h1>Mail-in-a-Box Advanced Configuration</h1>
+
+	    			<p>This page collects tips for advanced configurations.</p>
+
+					<h2 id="relaying">Relaying For Other Machines</h2>
+
+					<p>If you have other machines sending mail using a domain name hosted on your Mail-in-a-Box (e.g. a webserver, or any machine that has cron jobs you want to see the output of) we recommend that you configure those machines to relay their outbound mail via the Mail-in-a-Box. Otherwise those emails may be marked as spam by recipients.</p>
+
+					<p>If the sending machine is running Ubuntu 18.04 this can be done as follows. No changes are required on the Mail-in-a-Box itself (other than the creation of a mail account for the remote machine to authenticate with, and optionally the creation of aliases to authorize the remote machine to send from multiple addresses); <em>all commands that follow are to be run on the remote machine</em>.</p>
+
+					<ol>
+						<li>Run <code>sudo apt-get install postfix</code> and choose &ldquo;Satellite system&rdquo; when prompted.
+							<ul>
+								<li>It's important to include the SMTP port for the relay host, for example: <code>box.example.com:465</code></li>
+							</ul>
+						</li>
+						<li>
+							<p>Append the following lines to <code>/etc/postfix/main.cf</code>:</p>
+							<pre><code>mydestination =
+smtp_tls_wrappermode = yes
+smtp_tls_security_level = verify
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/relay_password
+smtp_sasl_tls_security_options = </code></pre>
+						</li>
+            <li>Ensure the relay host is correctly set in <code>/etc/postfix/main.cf</code>: <code>relayhost = [box.example.com]:465</code>
+            </li>
+						<li>
+							<p>Write credentials in the following form to <code>/etc/postfix/relay_password</code> (substitute the second and third values with credentials for a freshly created account on the Mail-in-a-Box, and the first with the hostname of your Mail-in-a-Box):</p>
+							<pre><code>yourmailinabox.yourdomain relayusername:relaypassword</code></pre>
+              <p>If the remote machine only needs to be able to send mail from one address you should just use that address as the relay username.</p>
+              <p>If the remote machine needs to be able to send mail from multiple addresses, the relay username can be anything, as you will need to separately authorize it to send from those addresses. This is done by creating mail-forward aliases which include the relay username in the alias's permitted senders field (select the "I’ll enter the mail users that can send mail claiming to be from the alias address." option in the aliases UI).</p>
+              <ul>
+                <li>Create regular mail-forward aliases for each address that the remote machine needs to be able to send from if you know those addresses in advance.</li>
+                <li>Create catch-all mail-forward aliases for each domain that the remote machine needs to be able to send from if you do not know which addresses on that domain the remote machine will need to send as.</li>
+              </ul>
+						</li>
+						<li>chmod the password file to 600 (<code>sudo chmod 600 /etc/postfix/relay_password</code>), run <code>sudo postmap /etc/postfix/relay_password</code> and then reload postfix (<code>sudo service postfix reload</code>).</li>
+                        <li>If your Mail-in-a-Box is using self-signed certificates, the remote machine will not trust the connection.
+                            <ul>
+                                <li>Copy <code>/home/user-data/ssl/ssl_certificate.pem</code> from your Mail-in-a-Box to the remote machine.</li>
+                                <li>Add it to the trusted certificates store (distribution specific). On Debian/Ubuntu, move the certificate to <code>/usr/local/share/ca-certificates/</code> and rename it so its extension is <code>crt</code>. Run <code>sudo update-ca-certificates</code> to add it to the trusted certificate store.</li>
+                              </ul>
+                        </li>
+					</ol>
+
+					<p>And that's it. Mail created and dispatched on the remote machine will now be routed via your Mail-in-a-Box.</p>
+
+					<p>You can send a test email on the remote machine by running:</p>
+
+					<pre>echo "relay test" | mail -s "relay test" destinationuser@destinationdomain</pre>
+
+					<h2 id="filtering">Sieve Filtering</h2>
+
+					<p>Sieve can be used to filter, file, flag, highlight, etc. messages as well as do vacation/auto replies.</p>
+
+					<p>Users who wish to do their own Sieve filter scripts may do so by using the filter section of Roundcube mail. Make sure to set one of the scripts as active in Roundcube to enable it. These scripts are placed automatically into <code>/home/user-data/mail/sieve/DOMAIN/USER</code>. You can also manually create a script file with path <code>/home/user-data/mail/sieve/DOMAIN/USER.sieve</code>.</p>
+
+					<p>You may also enable server-wide Sieve rules that will be run either before or after the user's sieve script. To so, make a text file with a .sieve extension and place it into <code>/home/user-data/mail/sieve/global_before</code> or <code>/home/user-data/mail/sieve/global_after</code>, depending on if you want the global script run before or after the user's script. You typically would want to use global_before since it is possible for the user's sieve script to stop execution of your global script. At this time, these scripts run for all domains and cannot be specified for only one domain.</p>
+
+					<p>Here is an example file in <code>/home/user-data/mail/sieve/global_before/global.sieve</code> that will always place the user's email into a backup mailbox:</p>
+
+					<p><pre><code>require ["fileinto","mailbox"];
+fileinto "INBOX";
+fileinto :create "backup-mailbox";
+</code></pre></p>
+				  <p>Note that Mail-in-a-Box contains a sieve script to filter Spam which cannot be altered. When the header contains X-Spam-Status with value Yes, the email is filed into the Spam mailbox.</p>
+
+				  <p>For information on what is possible with Dovecot Pigeonhole Sieve, as well as examples, see <a href="https://doc.dovecot.org/configuration_manual/sieve/pigeonhole_sieve_interpreter/">https://doc.dovecot.org/configuration_manual/sieve/pigeonhole_sieve_interpreter/</a></p>
+
+					<div class="hidden-xs" style="height: 200px"> </div>
+
+    		</div>
+
+    	</div>
+	</div>
+
+	<script src="static/vendor/jquery.js"> </script>
+    <script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
