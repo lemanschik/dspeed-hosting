@@ -22,11 +22,11 @@ if [ -z "$TAG" ]; then
 	UBUNTU_VERSION=$( lsb_release -d | sed 's/.*:\s*//' | sed 's/\([0-9]*\.[0-9]*\)\.[0-9]/\1/' )
 	if [ "$UBUNTU_VERSION" == "Ubuntu 22.04 LTS" ]; then
 		# This machine is running Ubuntu 22.04, which is supported by
-		# DIREKTSPEED-Hosting versions 60 and later.
+		# AwesomeOS - Web Hosting Server versions 60 and later.
 		TAG=v67
 	elif [ "$UBUNTU_VERSION" == "Ubuntu 18.04 LTS" ]; then
 		# This machine is running Ubuntu 18.04, which is supported by
-		# DIREKTSPEED-Hosting versions 0.40 through 5x.
+		# AwesomeOS - Web Hosting Server versions 0.40 through 5x.
 		echo "Support is ending for Ubuntu 18.04."
 		echo "Please immediately begin to migrate your data to"
 		echo "a new machine running Ubuntu 22.04. See:"
@@ -34,7 +34,7 @@ if [ -z "$TAG" ]; then
 		TAG=v57a
 	elif [ "$UBUNTU_VERSION" == "Ubuntu 14.04 LTS" ]; then
 		# This machine is running Ubuntu 14.04, which is supported by
-		# DIREKTSPEED-Hosting versions 1 through v0.30.
+		# AwesomeOS - Web Hosting Server versions 1 through v0.30.
 		echo "Ubuntu 14.04 is no longer supported."
 		echo "The last version  supporting Ubuntu 14.04 will be installed."
 		TAG=v0.30
@@ -50,7 +50,7 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 
-# Clone the DIREKTSPEED-Hosting repository if it doesn't exist.
+# Clone the AwesomeOS - Web Hosting Server repository if it doesn't exist.
 if [ ! -d $HOME/dspeed-hosting ]; then
 	if [ ! -f /usr/bin/git ]; then
 		echo Installing git . . .
@@ -63,7 +63,7 @@ if [ ! -d $HOME/dspeed-hosting ]; then
 		SOURCE=https://github.com/direktspeed/hosting
 	fi
 
-	echo Downloading DIREKTSPEED-Hosting $TAG. . .
+	echo Downloading AwesomeOS - Web Hosting Server $TAG. . .
 	git clone \
 		-b $TAG --depth 1 \
 		$SOURCE \
@@ -78,7 +78,7 @@ cd $HOME/dspeed-hosting
 
 # Update it.
 if [ "$TAG" != $(git describe --always) ]; then
-	echo Updating DIREKTSPEED-Hosting to $TAG . . .
+	echo Updating AwesomeOS - Web Hosting Server to $TAG . . .
 	git fetch --depth 1 --force --prune origin tag $TAG
 	if ! git checkout -q $TAG; then
 		echo "Update failed. Did you modify something in $(pwd)?"

@@ -1,10 +1,10 @@
 # Contributing
 
-DIREKTSPEED-Hosting is an open source project. Your contributions and pull requests are welcome.
+AwesomeOS - Web Hosting Server is an open source project. Your contributions and pull requests are welcome.
 
 ## Development
 
-To start developing DIREKTSPEED-Hosting, [clone the repository](https://github.com/direktspeed/hosting) and familiarize yourself with the code.
+To start developing AwesomeOS - Web Hosting Server, [clone the repository](https://github.com/direktspeed/hosting) and familiarize yourself with the code.
 
     $ git clone https://github.com/direktspeed/hosting
 
@@ -12,7 +12,7 @@ To start developing DIREKTSPEED-Hosting, [clone the repository](https://github.c
 
 We recommend you use [Vagrant](https://www.vagrantup.com/intro/getting-started/install.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads) for development. Please install them first.
 
-With Vagrant set up, the following should boot up DIREKTSPEED-Hosting inside a virtual machine:
+With Vagrant set up, the following should boot up AwesomeOS - Web Hosting Server inside a virtual machine:
 
     $ vagrant up --provision
 
@@ -20,7 +20,7 @@ _If you're seeing an error message about your *IP address being listed in the Sp
 
 ### Modifying your `hosts` file
 
-After a while, DIREKTSPEED-Hosting will be available at `192.168.56.4` (unless you changed that in your `Vagrantfile`). To be able to use the web-based bits, we recommend to add a hostname to your `hosts` file:
+After a while, AwesomeOS - Web Hosting Server will be available at `192.168.56.4` (unless you changed that in your `Vagrantfile`). To be able to use the web-based bits, we recommend to add a hostname to your `hosts` file:
 
     $ echo "192.168.56.4 dspeed-hosting.lan" | sudo tee -a /etc/hosts
 
@@ -43,7 +43,7 @@ Once inside the VM, you can re-run individual parts of the setup like in this ex
 
 ### Tests
 
-DIREKTSPEED-Hosting needs more tests. If you're still looking for a way to help out, writing and contributing tests would be a great start!
+AwesomeOS - Web Hosting Server needs more tests. If you're still looking for a way to help out, writing and contributing tests would be a great start!
 
 ## Public domain
 

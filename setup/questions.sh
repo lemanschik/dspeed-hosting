@@ -12,16 +12,16 @@ if [ -z "${NONINTERACTIVE:-}" ]; then
 		apt_get_quiet install dialog python3 python3-pip  || exit 1
 	fi
 
-	# Installing email_validator is repeated in setup/management.sh, but in setup/management.sh
+	# Installing email_validator is repeated in setup/dspeed-hosting-daemon.sh, but in setup/dspeed-hosting-daemon.sh
 	# we install it inside a virtualenv. In this script, we don't have the virtualenv yet
 	# so we install the python package globally.
 	hide_output pip3 install "email_validator>=1.0.0" || exit 1
 
-	message_box "DIREKTSPEED-Hosting Installation" \
-		"Hello and thanks for deploying a DIREKTSPEED-Hosting!
+	message_box "AwesomeOS - Web Hosting Server Installation" \
+		"Hello and thanks for deploying a AwesomeOS - Web Hosting Server!
 		\n\nI'm going to ask you a few questions.
 		\n\nTo change your answers later, just run 'sudo dspeed-hosting' from the command line.
-		\n\nNOTE: You should only install this on a brand new Ubuntu installation 100% dedicated to DIREKTSPEED-Hosting. DIREKTSPEED-Hosting will, for example, remove apache2."
+		\n\nNOTE: You should only install this on a brand new Ubuntu installation 100% dedicated to AwesomeOS - Web Hosting Server. AwesomeOS - Web Hosting Server will, for example, remove apache2."
 fi
 
 # The box needs a name.
@@ -207,6 +207,6 @@ if [ "$PRIVATE_IPV6" != "$PUBLIC_IPV6" ]; then
 	echo "Private IPv6 Address: $PRIVATE_IPV6"
 fi
 if [ -f /usr/bin/git ] && [ -d .git ]; then
-	echo "DIREKTSPEED-Hosting Version: " $(git describe --always)
+	echo "AwesomeOS - Web Hosting Server Version: " $(git describe --always)
 fi
 echo

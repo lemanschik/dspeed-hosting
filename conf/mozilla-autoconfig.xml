@@ -3,7 +3,7 @@
     <emailProvider id="PRIMARY_HOSTNAME">
       <domain>PRIMARY_HOSTNAME</domain>
 
-      <displayName>PRIMARY_HOSTNAME (DIREKTSPEED-Hosting)</displayName>
+      <displayName>PRIMARY_HOSTNAME (AwesomeOS - Web Hosting Server)</displayName>
       <displayShortName>PRIMARY_HOSTNAME</displayShortName>
 
       <incomingServer type="imap">

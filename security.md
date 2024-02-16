@@ -1,7 +1,7 @@
-DIREKTSPEED-Hosting Security Guide
+AwesomeOS - Web Hosting Server Security Guide
 ============================
 
-DIREKTSPEED-Hosting turns a fresh Ubuntu 22.04 LTS 64-bit machine into a domain/mail server appliance by installing and configuring various components.
+AwesomeOS - Web Hosting Server turns a fresh Ubuntu 22.04 LTS 64-bit machine into a domain/mail server appliance by installing and configuring various components.
 
 This page documents the security posture.
 
@@ -58,7 +58,7 @@ The passwords for mail users are stored on disk using the [SHA512-CRYPT](http://
 
 ### Console access
 
-Console access (e.g. via SSH) is configured by the system image used to create the server, typically from by a cloud virtual machine provider (e.g. Digital Ocean). DIREKTSPEED-Hosting does not set any console access settings, although it will warn the administrator in the System Status Checks if password-based login is turned on.
+Console access (e.g. via SSH) is configured by the system image used to create the server, typically from by a cloud virtual machine provider (e.g. Digital Ocean). AwesomeOS - Web Hosting Server does not set any console access settings, although it will warn the administrator in the System Status Checks if password-based login is turned on.
 
 The [setup guide video](https://hosting.dspeed.eu/) explains how to verify the host key fingerprint on first login.
 
@@ -68,7 +68,7 @@ If DNSSEC is enabled at the server's domain name's registrar, the SSHFP record t
 
 `fail2ban` provides some protection from brute-force login attacks (repeated logins that guess account passwords) by blocking offending IP addresses at the network level.
 
-The following services are protected: SSH, IMAP (dovecot), SMTP submission (postfix), webmail (roundcube), Nextcloud/CalDAV/CardDAV (over HTTP), and the DIREKTSPEED-Hosting control panel (over HTTP).
+The following services are protected: SSH, IMAP (dovecot), SMTP submission (postfix), webmail (roundcube), Nextcloud/CalDAV/CardDAV (over HTTP), and the AwesomeOS - Web Hosting Server control panel (over HTTP).
 
 Some other services running on the server may be missing fail2ban filters.
 

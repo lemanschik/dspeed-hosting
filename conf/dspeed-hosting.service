@@ -1,5 +1,5 @@
 [Unit]
-Description=DIREKTSPEED-Hosting System Management Service
+Description=AwesomeOS - Web Hosting Server System Management Service
 After=multi-user.target
 
 [Service]

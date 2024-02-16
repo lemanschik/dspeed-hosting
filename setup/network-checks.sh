@@ -32,7 +32,7 @@ if host $REVERSED_IPV4.zen.spamhaus.org > /dev/null; then
 	echo "cannot continue."
 	echo
 	echo "Associate a different IP address with this machine if possible."
-	echo "Many residential network IP addresses are listed, so DIREKTSPEED-Hosting"
+	echo "Many residential network IP addresses are listed, so AwesomeOS - Web Hosting Server"
 	echo "typically cannot be used on a residential Internet connection."
 	echo
 	exit 1

@@ -20,7 +20,7 @@ source /etc/dspeed-hosting.conf # load global vars
 
 
 # Install packages for dovecot. These are all core dovecot plugins,
-# but dovecot-lucene is packaged by *us* in the DIREKTSPEED-Hosting PPA,
+# but dovecot-lucene is packaged by *us* in the AwesomeOS - Web Hosting Server PPA,
 # not by Ubuntu.
 
 echo "Installing Dovecot (IMAP server)..."

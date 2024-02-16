@@ -185,13 +185,13 @@ if [ ! -d /usr/local/lib/owncloud/ ] || [[ ! ${CURRENT_NEXTCLOUD_VER} =~ ^$nextc
 		fi
 
 		if [[ ${CURRENT_NEXTCLOUD_VER} =~ ^[89] ]]; then
-			echo "Upgrades from DIREKTSPEED-Hosting prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 8 or 9) are not supported. Upgrade to DIREKTSPEED-Hosting version v0.30 first. Setup will continue, but skip the Nextcloud migration."
+			echo "Upgrades from AwesomeOS - Web Hosting Server prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 8 or 9) are not supported. Upgrade to AwesomeOS - Web Hosting Server version v0.30 first. Setup will continue, but skip the Nextcloud migration."
 			return 0
 		elif [[ ${CURRENT_NEXTCLOUD_VER} =~ ^1[012] ]]; then
-			echo "Upgrades from DIREKTSPEED-Hosting prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 10, 11 or 12) are not supported. Upgrade to DIREKTSPEED-Hosting version v0.30 first. Setup will continue, but skip the Nextcloud migration."
+			echo "Upgrades from AwesomeOS - Web Hosting Server prior to v0.28 (dated July 30, 2018) with Nextcloud < 13.0.6 (you have ownCloud 10, 11 or 12) are not supported. Upgrade to AwesomeOS - Web Hosting Server version v0.30 first. Setup will continue, but skip the Nextcloud migration."
 			return 0
 		elif [[ ${CURRENT_NEXTCLOUD_VER} =~ ^1[3456789] ]]; then
-			echo "Upgrades from DIREKTSPEED-Hosting prior to v60 with Nextcloud 19 or earlier are not supported. Upgrade to the latest DIREKTSPEED-Hosting version supported on your machine first. Setup will continue, but skip the Nextcloud migration."
+			echo "Upgrades from AwesomeOS - Web Hosting Server prior to v60 with Nextcloud 19 or earlier are not supported. Upgrade to the latest AwesomeOS - Web Hosting Server version supported on your machine first. Setup will continue, but skip the Nextcloud migration."
 			return 0
 		fi
 
@@ -334,7 +334,7 @@ EOF
 chown www-data:www-data $STORAGE_ROOT/owncloud/config.php
 
 # Enable/disable apps. Note that this must be done after the Nextcloud setup.
-# The firstrunwizard gave Josh all sorts of problems, so disabling that.
+# The firstrunwizard gave all sorts of problems, so disabling that.
 # user_external is what allows Nextcloud to use IMAP for login. The contacts
 # and calendar apps are the extensions we really care about here.
 hide_output sudo -u www-data php$PHP_VER /usr/local/lib/owncloud/console.php app:disable firstrunwizard
@@ -375,7 +375,7 @@ tools/editconf.py /etc/php/$PHP_VER/cli/conf.d/10-opcache.ini -c ';' \
 
 # Migrate users_external data from <0.6.0 to version 3.0.0
 # (see https://github.com/nextcloud/user_external).
-# This version was probably in use in DIREKTSPEED-Hosting v0.41 (February 26, 2019) and earlier.
+# This version was probably in use in AwesomeOS - Web Hosting Server v0.41 (February 26, 2019) and earlier.
 # We moved to v0.6.3 in 193763f8. Ignore errors - maybe there are duplicated users with the
 # correct backend already.
 sqlite3 $STORAGE_ROOT/owncloud/owncloud.db "UPDATE oc_users_external SET backend='127.0.0.1';" || /bin/true
@@ -385,7 +385,7 @@ sqlite3 $STORAGE_ROOT/owncloud/owncloud.db "UPDATE oc_users_external SET backend
 # https://docs.nextcloud.com/server/24/admin_manual/groupware/calendar.html#background-jobs
 cat > /etc/cron.d/dspeed-hosting-nextcloud << EOF;
 #!/bin/bash
-# DIREKTSPEED-Hosting
+# AwesomeOS - Web Hosting Server
 */5 * * * *	root	sudo -u www-data php$PHP_VER -f /usr/local/lib/owncloud/cron.php
 */5 * * * *	root	sudo -u www-data php$PHP_VER -f /usr/local/lib/owncloud/occ dav:send-event-reminders
 EOF

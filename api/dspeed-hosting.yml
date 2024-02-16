@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: DIREKTSPEED-Hosting
+  title: AwesomeOS - Web Hosting Server
   description: |
-    DIREKTSPEED-Hosting API HTTP specification.
+    AwesomeOS - Web Hosting Server API HTTP specification.
 
     # Introduction
     This API is documented in [**OpenAPI format**](http://spec.openapis.org/oas/v3.0.3).
@@ -10,7 +10,7 @@ info:
 
     All endpoints are relative to `https://{host}/admin` and are secured with [`Basic Access` authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). If you have multi-factor authentication enabled, authentication with a `user:password` combination will fail unless a valid OTP is supplied via the `x-auth-token` header. Authentication via a `user:user_key` pair is possible without the header being present.
   contact:
-    name: DIREKTSPEED-Hosting support
+    name: AwesomeOS - Web Hosting Server support
     url: https://hosting.dspeed.eu/
   license:
     name: CC0 1.0 Universal
@@ -18,7 +18,7 @@ info:
   version: 0.51.0
   x-logo:
     url: https://hosting.dspeed.eu/static/logo.png
-    altText: DIREKTSPEED-Hosting logo
+    altText: AwesomeOS - Web Hosting Server logo
 externalDocs:
   description: Find out more about Mail-in-a-box.
   url: https://hosting.dspeed.eu/
@@ -152,7 +152,7 @@ paths:
       tags:
         - System
       summary: Get system version
-      description: Returns installed DIREKTSPEED-Hosting version.
+      description: Returns installed AwesomeOS - Web Hosting Server version.
       operationId: getSystemVersion
       x-codeSamples:
         - lang: curl
@@ -178,7 +178,7 @@ paths:
       tags:
         - System
       summary: Get system upstream version
-      description: Returns DIREKTSPEED-Hosting upstream version.
+      description: Returns AwesomeOS - Web Hosting Server upstream version.
       operationId: getSystemUpstreamVersion
       x-codeSamples:
         - lang: curl

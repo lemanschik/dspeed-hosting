@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 #
-# Tests the DNS configuration of a DIREKTSPEED-Hosting.
+# Tests the DNS configuration of a AwesomeOS - Web Hosting Server.
 #
 # tests/dns.py ipaddr hostname
 #
-# where ipaddr is the IP address of your DIREKTSPEED-Hosting
+# where ipaddr is the IP address of your AwesomeOS - Web Hosting Server
 # and hostname is the domain name to check the DNS for.
 
 import sys, re, difflib
@@ -77,19 +77,19 @@ def test2(tests, server, description):
 	return first # success
 
 # Test the response from the machine itself.
-if not test(ipaddr, "DIREKTSPEED-Hosting"):
+if not test(ipaddr, "AwesomeOS - Web Hosting Server"):
 	print ()
-	print ("Please run the DIREKTSPEED-Hosting setup script on %s again." % hostname)
+	print ("Please run the AwesomeOS - Web Hosting Server setup script on %s again." % hostname)
 	sys.exit(1)
 else:
-	print ("The DIREKTSPEED-Hosting provided correct DNS answers.")
+	print ("The AwesomeOS - Web Hosting Server provided correct DNS answers.")
 	print ()
 
 	# If those settings are OK, also test Google's Public DNS
 	# to see if the machine is hooked up to recursive DNS properly.
 	if not test("8.8.8.8", "Google Public DNS"):
 		print ()
-		print ("Check that the nameserver settings for %s are correct at your domain registrar. It may take a few hours for Google Public DNS to update after changes on your DIREKTSPEED-Hosting." % hostname)
+		print ("Check that the nameserver settings for %s are correct at your domain registrar. It may take a few hours for Google Public DNS to update after changes on your AwesomeOS - Web Hosting Server." % hostname)
 		sys.exit(1)
 	else:
 		print ("Your domain registrar or DNS host appears to be configured correctly as well. Public DNS provides the same answers.")

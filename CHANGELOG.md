@@ -9,9 +9,9 @@ Version 67 (December 22, 2023)
 Version 66 (December 17, 2023)
 ------------------------------
 
-* Some users reported an error installing DIREKTSPEED-Hosting related to the virtualenv command. This is hopefully fixed.
+* Some users reported an error installing AwesomeOS - Web Hosting Server related to the virtualenv command. This is hopefully fixed.
 * Roundcube is updated to 1.6.5 fixing a security vulnerability.
-* For DIREKTSPEED-Hosting developers, a new setup variable is added to pull the source code from a different repository.
+* For AwesomeOS - Web Hosting Server developers, a new setup variable is added to pull the source code from a different repository.
 
 Version 65 (October 27, 2023)
 -----------------------------
@@ -23,7 +23,7 @@ Version 65 (October 27, 2023)
 Version 64 (September 2, 2023)
 ------------------------------
 
-* Fixed broken installation when upgrading from DIREKTSPEED-Hosting version 56 (Nextcloud 22) and earlier because of an upstream packaging issue.
+* Fixed broken installation when upgrading from AwesomeOS - Web Hosting Server version 56 (Nextcloud 22) and earlier because of an upstream packaging issue.
 * Fixed backups to work with the latest duplicity package which was not backwards compatible.
 * Fixed setting B2 as a backup target with a slash in the application key.
 * Turned off OpenDMARC diagnostic reports sent in response to incoming mail.
@@ -96,7 +96,7 @@ Version 60 (October 11, 2022)
 
 This is the first release for Ubuntu 22.04.
 
-**Before upgrading**, you must **first upgrade your existing Ubuntu 18.04 box to DIREKTSPEED-Hosting v0.51 or later**, if you haven't already done so. That may not be possible after Ubuntu 18.04 reaches its end of life in April 2023, so please complete the upgrade well before then. (If you are not using Nextcloud's contacts or calendar, you can migrate to the latest version  from any previous version.)
+**Before upgrading**, you must **first upgrade your existing Ubuntu 18.04 box to AwesomeOS - Web Hosting Server v0.51 or later**, if you haven't already done so. That may not be possible after Ubuntu 18.04 reaches its end of life in April 2023, so please complete the upgrade well before then. (If you are not using Nextcloud's contacts or calendar, you can migrate to the latest version  from any previous version.)
 
 For complete upgrade instructions, see:
 
@@ -129,7 +129,7 @@ Version 57 (June 12, 2022)
 
 Setup:
 
-* Fixed issue upgrading from DIREKTSPEED-Hosting v0.40-v0.50 because of a changed URL that Nextcloud is downloaded from.
+* Fixed issue upgrading from AwesomeOS - Web Hosting Server v0.40-v0.50 because of a changed URL that Nextcloud is downloaded from.
 
 Backups:
 
@@ -196,7 +196,7 @@ v0.54 (June 20, 2021)
 
 Mail:
 
-* Forwarded mail using mail filter rules (in Roundcube; "sieve" rules) stopped re-writing the envelope address at some point, causing forwarded mail to often be marked as spam by the final recipient. These forwards will now re-write the envelope as the DIREKTSPEED-Hosting user receiving the mail to comply with SPF/DMARC rules.
+* Forwarded mail using mail filter rules (in Roundcube; "sieve" rules) stopped re-writing the envelope address at some point, causing forwarded mail to often be marked as spam by the final recipient. These forwards will now re-write the envelope as the AwesomeOS - Web Hosting Server user receiving the mail to comply with SPF/DMARC rules.
 * Sending mail is now possible on port 465 with the "SSL" or "TLS" option in mail clients, and this is now the recommended setting. Port 587 with STARTTLS remains available but should be avoided when configuring new mail clients.
 * Roundcube's login cookie is updated to use a new encryption algorithm (AES-256-CBC instead of DES-EDE-CBC).
 
@@ -361,7 +361,7 @@ Software updates:
 
 System:
 
-* Nightly backups now occur on a random minute in the 3am hour (in the system time zone). The minute is chosen during DIREKTSPEED-Hosting installation/upgrade and remains the same until the next upgrade.
+* Nightly backups now occur on a random minute in the 3am hour (in the system time zone). The minute is chosen during AwesomeOS - Web Hosting Server installation/upgrade and remains the same until the next upgrade.
 * Fix for mail log statistics report on leap days.
 * Fix Mozilla autoconfig useGlobalPreferredServer setting.
 
@@ -379,7 +379,7 @@ v0.44 (February 15, 2020)
 System:
 
 * TLS settings have been upgraded following Mozilla's recommendations for servers. TLS1.2 and 1.3 are now the only supported protocols for web, IMAP, and SMTP (submission).
-* Fixed an issue starting services when DIREKTSPEED-Hosting isn't on the root filesystem.
+* Fixed an issue starting services when AwesomeOS - Web Hosting Server isn't on the root filesystem.
 * Changed some performance options affecting Roundcube and Nextcloud.
 
 Software updates:
@@ -412,12 +412,12 @@ v0.43 (September 1, 2019)
 
 Security fixes:
 
-* A security issue was discovered in rsync backups. If you have enabled rsync backups, the file `id_rsa_dspeed` may have been copied to your backup destination. This file can be used to access your backup destination. If the file was copied to your backup destination, we recommend that you delete the file on your backup destination, delete `/root/.ssh/id_rsa_dspeed` on your DIREKTSPEED-Hosting, then re-run DIREKTSPEED-Hosting setup, and re-configure your SSH public key at your backup destination according to the instructions in the DIREKTSPEED-Hosting control panel.
+* A security issue was discovered in rsync backups. If you have enabled rsync backups, the file `id_rsa_dspeed` may have been copied to your backup destination. This file can be used to access your backup destination. If the file was copied to your backup destination, we recommend that you delete the file on your backup destination, delete `/root/.ssh/id_rsa_dspeed` on your AwesomeOS - Web Hosting Server, then re-run AwesomeOS - Web Hosting Server setup, and re-configure your SSH public key at your backup destination according to the instructions in the AwesomeOS - Web Hosting Server control panel.
 * Brute force attack prevention was missing for the managesieve service.
 
 Setup:
 
-* Nextcloud was not upgraded properly after restoring DIREKTSPEED-Hosting from a backup from v0.40 or earlier.
+* Nextcloud was not upgraded properly after restoring AwesomeOS - Web Hosting Server from a backup from v0.40 or earlier.
 
 Mail:
 
@@ -456,7 +456,7 @@ v0.41 (February 26, 2019)
 System:
 
 * Missing brute force login attack prevention (fail2ban) filters which stopped working on Ubuntu 18.04 were added back.
-* Upgrades would fail if DIREKTSPEED-Hosting moved to a different directory in `systemctl link`.
+* Upgrades would fail if AwesomeOS - Web Hosting Server moved to a different directory in `systemctl link`.
 
 Mail:
 
@@ -473,7 +473,7 @@ v0.40 (January 12, 2019)
 
 This is the first release for Ubuntu 18.04. This version and versions going forward can **only** be installed on Ubuntu 18.04; however, upgrades of existing Ubuntu 14.04 boxes to the latest version supporting Ubuntu 14.04 (v0.30) continue to work as normal.
 
-When **upgrading**, you **must first upgrade your existing Ubuntu 14.04 DIREKTSPEED-Hosting box** to the latest release supporting Ubuntu 14.04 --- that's v0.30 --- before you migrate to Ubuntu 18.04. If you are running an older version  which has an old version of ownCloud or Nextcloud, you will *not* be able to upgrade your data because older versions of ownCloud and Nextcloud that are required to perform the upgrade *cannot* be run on Ubuntu 18.04. To upgrade from Ubuntu 14.04 to Ubuntu 18.04, you **must create a fresh Ubuntu 18.04 machine** before installing this version. In-place upgrades of servers are not supported. Since Ubuntu's support for Ubuntu 14.04 has almost ended, everyone is encouraged to create a new Ubuntu 18.04 machine and migrate to it.
+When **upgrading**, you **must first upgrade your existing Ubuntu 14.04 AwesomeOS - Web Hosting Server box** to the latest release supporting Ubuntu 14.04 --- that's v0.30 --- before you migrate to Ubuntu 18.04. If you are running an older version  which has an old version of ownCloud or Nextcloud, you will *not* be able to upgrade your data because older versions of ownCloud and Nextcloud that are required to perform the upgrade *cannot* be run on Ubuntu 18.04. To upgrade from Ubuntu 14.04 to Ubuntu 18.04, you **must create a fresh Ubuntu 18.04 machine** before installing this version. In-place upgrades of servers are not supported. Since Ubuntu's support for Ubuntu 14.04 has almost ended, everyone is encouraged to create a new Ubuntu 18.04 machine and migrate to it.
 
 For complete upgrade instructions, see:
 
@@ -483,7 +483,7 @@ The changelog for this release follows.
 
 Setup:
 
-* DIREKTSPEED-Hosting now targets Ubuntu 18.04 LTS, which will have support from Ubuntu through 2022.
+* AwesomeOS - Web Hosting Server now targets Ubuntu 18.04 LTS, which will have support from Ubuntu through 2022.
 * Some of the system packages updated in virtue of using Ubuntu 18.04 include postfix (2.11=>3.3) nsd (4.0=>4.1), nginx (1.4=>1.14), PHP (7.0=>7.2), Python (3.4=>3.6), fail2ban (0.8=>0.10), Duplicity (0.6=>0.7).
 * [Unofficial Bash Strict Mode](http://redsymbol.net/articles/unofficial-bash-strict-mode/) is turned on for setup, which might catch previously uncaught issues during setup.
 
@@ -506,7 +506,7 @@ Control Panel:
 
 * The users page now documents that passwords should only have ASCII characters to prevent character encoding mismaches between clients and the server.
 * The users page no longer shows user mailbox sizes because this was extremely slow for very large mailboxes.
-* The DIREKTSPEED-Hosting version is now shown in the system status checks even when the new-version check is disabled.
+* The AwesomeOS - Web Hosting Server version is now shown in the system status checks even when the new-version check is disabled.
 * The alises page now warns that alises should not be used to forward mail off of the box. Mail filters within Roundcube are better for that.
 * The explanation of greylisting has been improved.
 
@@ -783,7 +783,7 @@ DNS:
 System:
 
 * fail2ban jails added for SMTP submission, Roundcube, ownCloud, the control panel, and munin.
-* DIREKTSPEED-Hosting can now be installed on the i686 architecture.
+* AwesomeOS - Web Hosting Server can now be installed on the i686 architecture.
 
 v0.18c (June 2, 2016)
 ---------------------
@@ -806,7 +806,7 @@ ownCloud:
 
 Mail:
 
-* Roundcube is updated to version 1.1.5 and the Roundcube login screen now says "[hostname] Webmail" instead of "DIREKTSPEED-Hosting/Roundcube webmail".
+* Roundcube is updated to version 1.1.5 and the Roundcube login screen now says "[hostname] Webmail" instead of "AwesomeOS - Web Hosting Server/Roundcube webmail".
 * Fixed a long-standing issue with training the spam filter not working (because of a file permissions issue).
 
 Control panel:
@@ -931,7 +931,7 @@ Control panel:
 * Better messages if external DNS is used and, weirdly, custom secondary nameservers are set.
 * Add POP to the mail client settings documentation.
 * The box's IP address is added to the fail2ban whitelist so that the status checks don't trigger the machine banning itself, which results in the status checks showing services down even though they are running.
-* For SSL certificates, rather than asking you what country you are in during setup, ask at the time a CSR is generated. The default system self-signed certificate now omits a country in the subject (it was never needed). The CSR_COUNTRY DIREKTSPEED-Hosting setting is dropped entirely.
+* For SSL certificates, rather than asking you what country you are in during setup, ask at the time a CSR is generated. The default system self-signed certificate now omits a country in the subject (it was never needed). The CSR_COUNTRY AwesomeOS - Web Hosting Server setting is dropped entirely.
 
 System:
 
@@ -971,7 +971,7 @@ Web:
 
 Control panel:
 
-* Added an option to check for new DIREKTSPEED-Hosting versions within status checks. It is off by default so that boxes don't "phone home" without permission.
+* Added an option to check for new AwesomeOS - Web Hosting Server versions within status checks. It is off by default so that boxes don't "phone home" without permission.
 * Added a random password generator on the users page to simplify creating new accounts.
 * When S3 backup credentials are set, the credentials are now no longer ever sent back from the box to the client, for better security.
 * Fixed the jumpiness when a modal is displayed.
@@ -1014,7 +1014,7 @@ System:
 * ownCloud updated to version 8.1.1 (with upgrade work-around), its memcached caching enabled.
 * When upgrading, network checks like blocked port 25 are now skipped.
 * Tweaks to the intrusion detection rules for IMAP.
-* DIREKTSPEED-Hosting's setup is a lot quieter, hiding lots of irrelevant messages.
+* AwesomeOS - Web Hosting Server's setup is a lot quieter, hiding lots of irrelevant messages.
 
 Control panel:
 
@@ -1025,7 +1025,7 @@ Control panel:
 v0.12c (July 19, 2015)
 ----------------------
 
-v0.12c was posted to work around the current Sourceforge.net outage: pyzor's remote server is now hard-coded rather than accessing a file hosted on Sourceforge, and roundcube is now downloaded from a DIREKTSPEED-Hosting mirror rather than from Sourceforge.
+v0.12c was posted to work around the current Sourceforge.net outage: pyzor's remote server is now hard-coded rather than accessing a file hosted on Sourceforge, and roundcube is now downloaded from a AwesomeOS - Web Hosting Server mirror rather than from Sourceforge.
 
 v0.12b (July 4, 2015)
 ---------------------
@@ -1056,7 +1056,7 @@ v0.11 (June 29, 2015)
 Advisories:
 * Users can no longer spoof arbitrary email addresses in outbound mail. When sending mail, the email address configured in your mail client must match the SMTP login username being used, or the email address must be an alias with the SMTP login username listed as one of the alias's targets.
 * This update replaces your DKIM signing key with a stronger key. Because of DNS caching/propagation, mail sent within a few hours after this update could be marked as spam by recipients. If you use External DNS, you will need to update your DNS records.
-* The box will now install software from a new DIREKTSPEED-Hosting PPA on Launchpad.net, where we are distributing two of our own packages: a patched postgrey and dovecot-lucene.
+* The box will now install software from a new AwesomeOS - Web Hosting Server PPA on Launchpad.net, where we are distributing two of our own packages: a patched postgrey and dovecot-lucene.
 
 Mail:
 * Greylisting will now let some reputable senders pass through immediately.
@@ -1133,7 +1133,7 @@ System / Control Panel:
 
 Setup:
 
-* All DIREKTSPEED-Hosting release tags are now signed on github, instructions for verifying the signature are added to the README, and the integrity of some packages downloaded during setup is now verified against a SHA1 hash stored in the tag itself.
+* All AwesomeOS - Web Hosting Server release tags are now signed on github, instructions for verifying the signature are added to the README, and the integrity of some packages downloaded during setup is now verified against a SHA1 hash stored in the tag itself.
 * Bugs in first user account creation were fixed.
 
 v0.08 (April 1, 2015)

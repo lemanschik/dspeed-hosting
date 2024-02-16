@@ -58,7 +58,7 @@ tools/editconf.py /etc/postfix/main.cf \
 	smtp_bind_address=$PRIVATE_IP \
 	smtp_bind_address6=$PRIVATE_IPV6 \
 	myhostname=$PRIMARY_HOSTNAME\
-	smtpd_banner="\$myhostname ESMTP Hi, I'm a DIREKTSPEED-Hosting (Ubuntu/Postfix; see https://hosting.dspeed.eu/)" \
+	smtpd_banner="\$myhostname ESMTP Hi, I'm a AwesomeOS - Web Hosting Server (Ubuntu/Postfix; see https://hosting.dspeed.eu/)" \
 	mydestination=localhost
 
 # Tweak some queue settings:
@@ -269,7 +269,7 @@ chmod 700 $STORAGE_ROOT/mail/postgrey/{,db}
 cat > /etc/cron.daily/dspeed-hosting-postgrey-whitelist << EOF;
 #!/bin/bash
 
-# DIREKTSPEED-Hosting
+# AwesomeOS - Web Hosting Server
 
 # check we have a postgrey_whitelist_clients file and that it is not older than 28 days
 if [ ! -f /etc/postgrey/whitelist_clients ] || find /etc/postgrey/whitelist_clients -mtime +28 | grep -q '.' ; then

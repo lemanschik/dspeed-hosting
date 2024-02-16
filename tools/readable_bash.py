@@ -116,7 +116,7 @@ def generate_documentation():
         <div class="col-xs-12">
         <h1>Build Your Own Mail Server From Scratch</h1>
         <p>Here&rsquo;s how you can build your own mail server from scratch.</p>
-        <p>This document is generated automatically from <a href="https://hosting.dspeed.eu">DIREKTSPEED-Hosting</a>&rsquo;s setup script <a href="https://github.com/direktspeed/hosting">source code</a>.</p>
+        <p>This document is generated automatically from <a href="https://hosting.dspeed.eu">AwesomeOS - Web Hosting Server</a>&rsquo;s setup script <a href="https://github.com/direktspeed/hosting">source code</a>.</p>
         <hr>
       </div>
     </div>

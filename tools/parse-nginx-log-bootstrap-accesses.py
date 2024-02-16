@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # This is a tool Josh uses on his box serving hosting.dspeed.eu to parse the nginx
-# access log to see how many people are installing DIREKTSPEED-Hosting each day, by
+# access log to see how many people are installing AwesomeOS - Web Hosting Server each day, by
 # looking at accesses to the bootstrap.sh script (which is currently at the URL
 # .../setup.sh).
 

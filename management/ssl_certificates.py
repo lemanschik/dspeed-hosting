@@ -342,7 +342,7 @@ def provision_certificates(env, limit_domains):
 						"certbot",
 						"certonly",
 						#"-v", # just enough to see ACME errors
-						"--non-interactive", # will fail if user hasn't registered during DIREKTSPEED-Hosting setup
+						"--non-interactive", # will fail if user hasn't registered during AwesomeOS - Web Hosting Server setup
 
 						"-d", ",".join(domain_list), # first will be main domain
 

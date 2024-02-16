@@ -3,7 +3,7 @@
 source setup/functions.sh
 source /etc/dspeed-hosting.conf # load global vars
 
-echo "Installing DIREKTSPEED-Hosting system management daemon..."
+echo "Installing AwesomeOS - Web Hosting Server system management daemon..."
 
 # DEPENDENCIES
 
@@ -114,7 +114,7 @@ hide_output systemctl enable dspeed-hosting.service
 
 minute=$((RANDOM % 60))  # avoid overloading hosting.dspeed.eu
 cat > /etc/cron.d/dspeed-hosting-nightly << EOF;
-# DIREKTSPEED-Hosting --- Do not edit / will be overwritten on update.
+# AwesomeOS - Web Hosting Server --- Do not edit / will be overwritten on update.
 # Run nightly tasks: backup, status checks.
 $minute 3 * * *	root	(cd $(pwd) && management/daily_tasks.sh)
 EOF

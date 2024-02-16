@@ -236,7 +236,7 @@ def run_migrations():
 			break
 
 		print()
-		print("Running migration to DIREKTSPEED-Hosting #%d..." % next_ver)
+		print("Running migration to AwesomeOS - Web Hosting Server #%d..." % next_ver)
 
 		try:
 			migration_func(env)

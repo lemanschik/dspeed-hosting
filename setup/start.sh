@@ -1,7 +1,7 @@
 #!/bin/bash
 # This is the entry point for configuring the system.
 #####################################################
-
+# source setup/node.sh # load the new installer
 source setup/functions.sh # load our functions
 
 # Check system setup: Are we running as root on Ubuntu 18.04 on a
@@ -88,11 +88,14 @@ if [ ! -f $STORAGE_ROOT/dspeed-hosting.version ]; then
 	chown $STORAGE_USER:$STORAGE_USER $STORAGE_ROOT/dspeed-hosting.version
 fi
 
+PHP_VER=8.0
+
 # Save the global options in /etc/dspeed-hosting.conf so that standalone
 # tools know where to look for data. The default MTA_STS_MODE setting
 # is blank unless set by an environment variable, but see web.sh for
 # how that is interpreted.
 cat > /etc/dspeed-hosting.conf << EOF;
+PHP_VER=$PHP_VER
 STORAGE_USER=$STORAGE_USER
 STORAGE_ROOT=$STORAGE_ROOT
 PRIMARY_HOSTNAME=$PRIMARY_HOSTNAME
@@ -102,6 +105,39 @@ PRIVATE_IP=$PRIVATE_IP
 PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
 EOF
+
+if [ -z "${FIRST_TIME_SETUP:-}" ]; then
+# ### Install System Packages
+
+# Install basic utilities.
+#
+# * unattended-upgrades: Apt tool to install security updates automatically.
+# * cron: Runs background processes periodically.
+# * ntp: keeps the system time correct
+# * fail2ban: scans log files for repeated failed login attempts and blocks the remote IP at the firewall
+# * netcat-openbsd: `nc` command line networking tool
+# * git: we install some things directly from github
+# * sudo: allows privileged users to execute commands as root without being root
+# * coreutils: includes `nproc` tool to report number of processors, mktemp
+# * bc: allows us to do math to compute sane defaults
+# * openssh-client: provides ssh-keygen
+
+echo Installing system packages...
+apt_install python3 python3-dev python3-pip python3-setuptools \
+	netcat-openbsd wget curl git sudo coreutils bc file \
+	pollinate openssh-client unzip \
+	unattended-upgrades cron ntp fail2ban rsyslog
+fi
+
+
+if [ $(dpkg-query -W -f='${Status}' php${PHP_VER}-fpm 2>/dev/null | grep -c "ok installed") -eq 0 ];
+then
+	apt_install curl php${PHP_VER} php${PHP_VER}-fpm \
+		php${PHP_VER}-cli php${PHP_VER}-sqlite3 php${PHP_VER}-gd php${PHP_VER}-imap php${PHP_VER}-curl \
+		php${PHP_VER}-dev php${PHP_VER}-gd php${PHP_VER}-xml php${PHP_VER}-mbstring php${PHP_VER}-zip php${PHP_VER}-apcu \
+		php${PHP_VER}-intl php${PHP_VER}-imagick php${PHP_VER}-gmp php${PHP_VER}-bcmath
+fi
+
 
 # Start service configuration.
 source setup/system.sh
@@ -116,13 +152,13 @@ source setup/web.sh
 source setup/webmail.sh
 source setup/nextcloud.sh
 source setup/zpush.sh
-source setup/management.sh
+source setup/dspeed-hosting-daemon.sh
 source setup/munin.sh
 
 # Wait for the management daemon to start...
 until nc -z -w 4 127.0.0.1 10222
 do
-	echo Waiting for the DIREKTSPEED-Hosting management daemon to start...
+	echo Waiting for the AwesomeOS - Web Hosting Server management daemon to start...
 	sleep 2
 done
 
@@ -145,7 +181,7 @@ source setup/firstuser.sh
 if [ ! -d $STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/ ]; then
 echo
 echo "-----------------------------------------------"
-echo "DIREKTSPEED-Hosting uses Let's Encrypt to provision free SSL/TLS certificates"
+echo "AwesomeOS - Web Hosting Server uses Let's Encrypt to provision free SSL/TLS certificates"
 echo "to enable HTTPS connections to your box. We're automatically"
 echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
 echo
@@ -156,7 +192,7 @@ fi
 echo
 echo "-----------------------------------------------"
 echo
-echo Your DIREKTSPEED-Hosting is running.
+echo Your AwesomeOS - Web Hosting Server is running.
 echo
 echo Please log in to the control panel for further instructions at:
 echo

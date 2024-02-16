@@ -7,8 +7,8 @@
 redoc-cli bundle ../dspeed-hosting.yml \
   -t template.hbs \
   -o api-docs.html \
-  --templateOptions.metaDescription="DIREKTSPEED-Hosting HTTP API" \
-  --title="DIREKTSPEED-Hosting HTTP API" \
+  --templateOptions.metaDescription="AwesomeOS - Web Hosting Server HTTP API" \
+  --title="AwesomeOS - Web Hosting Server HTTP API" \
   --options.expandSingleSchemaField \
   --options.hideSingleRequestSampleTab \
   --options.jsonSampleExpandLevel=10 \

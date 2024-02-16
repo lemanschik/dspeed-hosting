@@ -19,7 +19,7 @@ mkdir -p /etc/nsd/zones
 touch /etc/nsd/zones.conf
 
 cat > /etc/nsd/nsd.conf << EOF;
-# Do not edit. Overwritten by DIREKTSPEED-Hosting setup.
+# Do not edit. Overwritten by AwesomeOS - Web Hosting Server setup.
 server:
   hide-version: yes
   logfile: "/var/log/nsd.log"
@@ -140,7 +140,7 @@ done
 # 30-day validation window, so we had better re-sign before then.
 cat > /etc/cron.daily/dspeed-hosting-dnssec << EOF;
 #!/bin/bash
-# DIREKTSPEED-Hosting
+# AwesomeOS - Web Hosting Server
 # Re-sign any DNS zones with DNSSEC because the signatures expire periodically.
 $(pwd)/tools/dns_update
 EOF

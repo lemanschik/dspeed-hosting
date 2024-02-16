@@ -1,9 +1,9 @@
-DIREKTSPEED-Hosting
+AwesomeOS - Web Hosting Server
 =============
 
 By [@JoshData](https://github.com/JoshData) and [contributors](https://github.com/direktspeed/hosting/graphs/contributors).
 
-DIREKTSPEED-Hosting helps individuals take back control of their email by defining a one-click, easy-to-deploy SMTP+everything else server: a mail server in a box.
+AwesomeOS - Web Hosting Server helps individuals take back control of their email by defining a one-click, easy-to-deploy SMTP+everything else server: a mail server in a box.
 
 **Please see [https://hosting.dspeed.eu](https://hosting.dspeed.eu) for the project's website and setup guide!**
 
@@ -23,7 +23,7 @@ Additionally, this project has a [Code of Conduct](CODE_OF_CONDUCT.md), which su
 In The Box
 ----------
 
-DIREKTSPEED-Hosting turns a fresh Ubuntu 22.04 LTS 64-bit machine into a working mail server by installing and configuring various components.
+AwesomeOS - Web Hosting Server turns a fresh Ubuntu 22.04 LTS 64-bit machine into a working mail server by installing and configuring various components.
 
 It is a one-click email appliance. There are no user-configurable setup options. It "just works."
 
@@ -44,9 +44,9 @@ It also includes system management tools:
 
 Internationalized domain names are supported and configured easily (but SMTPUTF8 is not supported, unfortunately).
 
-It also supports static website hosting since the box is serving HTTPS anyway. (To serve a website for your domains elsewhere, just add a custom DNS "A" record in you DIREKTSPEED-Hosting's control panel to point domains to another server.)
+It also supports static website hosting since the box is serving HTTPS anyway. (To serve a website for your domains elsewhere, just add a custom DNS "A" record in you AwesomeOS - Web Hosting Server's control panel to point domains to another server.)
 
-For more information on how DIREKTSPEED-Hosting handles your privacy, see the [security details page](security.md).
+For more information on how AwesomeOS - Web Hosting Server handles your privacy, see the [security details page](security.md).
 
 
 Installation
@@ -70,16 +70,16 @@ The installation will install, uninstall, and configure packages to turn the mac
 
 For help, DO NOT contact Josh directly --- I don't do tech support by email or tweet (no exceptions).
 
-Post your question on the [discussion forum](https://discourse.hosting.dspeed.eu/) instead, where maintainers and DIREKTSPEED-Hosting users may be able to help you.
+Post your question on the [discussion forum](https://discourse.hosting.dspeed.eu/) instead, where maintainers and AwesomeOS - Web Hosting Server users may be able to help you.
 
-Note that while we want everything to "just work," we can't control the rest of the Internet. Other mail services might block or spam-filter email sent from your DIREKTSPEED-Hosting.
-This is a challenge faced by everyone who runs their own mail server, with or without DIREKTSPEED-Hosting. See our discussion forum for tips about that.
+Note that while we want everything to "just work," we can't control the rest of the Internet. Other mail services might block or spam-filter email sent from your AwesomeOS - Web Hosting Server.
+This is a challenge faced by everyone who runs their own mail server, with or without AwesomeOS - Web Hosting Server. See our discussion forum for tips about that.
 
 
 Contributing and Development
 ----------------------------
 
-DIREKTSPEED-Hosting is an open source project. Your contributions and pull requests are welcome. See [CONTRIBUTING](CONTRIBUTING.md) to get started. 
+AwesomeOS - Web Hosting Server is an open source project. Your contributions and pull requests are welcome. See [CONTRIBUTING](CONTRIBUTING.md) to get started. 
 
 
 The Acknowledgements
@@ -87,7 +87,7 @@ The Acknowledgements
 
 This project was inspired in part by the ["NSA-proof your email in 2 hours"](http://sealedabstract.com/code/nsa-proof-your-e-mail-in-2-hours/) blog post by Drew Crawford, [Sovereign](https://github.com/sovereign/sovereign) by Alex Payne, and conversations with <a href="https://twitter.com/shevski" target="_blank">@shevski</a>, <a href="https://github.com/konklone" target="_blank">@konklone</a>, and <a href="https://github.com/gregelin" target="_blank">@GregElin</a>.
 
-DIREKTSPEED-Hosting is similar to [iRedMail](http://www.iredmail.org/) and [Modoboa](https://github.com/tonioo/modoboa).
+AwesomeOS - Web Hosting Server is similar to [iRedMail](http://www.iredmail.org/) and [Modoboa](https://github.com/tonioo/modoboa).
 
 ## Troubleshooting
 If you copy this files from a windows pc run:

@@ -79,7 +79,7 @@ def provision_totp(email, env):
 	# Make a URI that we encode within a QR code.
 	uri = pyotp.TOTP(secret).provisioning_uri(
 		name=email,
-		issuer_name=env["PRIMARY_HOSTNAME"] + " DIREKTSPEED-Hosting Control Panel"
+		issuer_name=env["PRIMARY_HOSTNAME"] + " AwesomeOS - Web Hosting Server Control Panel"
 	)
 
 	# Generate a QR code as a base64-encode PNG image.

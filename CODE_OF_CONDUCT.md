@@ -1,6 +1,6 @@
-# DIREKTSPEED-Hosting Code of Conduct
+# AwesomeOS - Web Hosting Server Code of Conduct
 
-DIREKTSPEED-Hosting is an open source community project about working, as a group, to empower ourselves and others to have control over our own digital communications. Just as we hope to increase technological diversity on the Internet through decentralization, we also believe that diverse viewpoints and voices among our community members foster innovation and creative solutions to the challenges we face.
+AwesomeOS - Web Hosting Server is an open source community project about working, as a group, to empower ourselves and others to have control over our own digital communications. Just as we hope to increase technological diversity on the Internet through decentralization, we also believe that diverse viewpoints and voices among our community members foster innovation and creative solutions to the challenges we face.
 
 We are committed to providing a safe, welcoming, and harrassment-free space for collaboration, for everyone, without regard to age, disability, economic situation, ethnicity, gender identity and expression, language fluency, level of knowledge or experience, nationality, personal appearance, race, religion, sexual identity and orientation, or any other attribute. Community comes first. This policy supersedes all other project goals.
 
@@ -8,9 +8,9 @@ The maintainers  share the dual responsibility of leading by example and enforci
 
 ## Scope
 
-This Code of Conduct applies to all places where DIREKTSPEED-Hosting community activity is ocurring, including on GitHub, in discussion forums, on Slack, on social media, and in real life. The Code of Conduct applies not only on websites/at events run by the DIREKTSPEED-Hosting community (e.g. our GitHub organization, our Slack team) but also at any other location where the DIREKTSPEED-Hosting community is present (e.g. in issues of other GitHub organizations where DIREKTSPEED-Hosting community members are discussing problems related to DIREKTSPEED-Hosting, or real-life professional conferences), or whenever a DIREKTSPEED-Hosting community member is representing DIREKTSPEED-Hosting to the public at large or acting on behalf .
+This Code of Conduct applies to all places where AwesomeOS - Web Hosting Server community activity is ocurring, including on GitHub, in discussion forums, on Slack, on social media, and in real life. The Code of Conduct applies not only on websites/at events run by the AwesomeOS - Web Hosting Server community (e.g. our GitHub organization, our Slack team) but also at any other location where the AwesomeOS - Web Hosting Server community is present (e.g. in issues of other GitHub organizations where AwesomeOS - Web Hosting Server community members are discussing problems related to AwesomeOS - Web Hosting Server, or real-life professional conferences), or whenever a AwesomeOS - Web Hosting Server community member is representing AwesomeOS - Web Hosting Server to the public at large or acting on behalf .
 
-This code does not apply to activity on a server running DIREKTSPEED-Hosting software, unless your server is hosting a service for the DIREKTSPEED-Hosting community at large.
+This code does not apply to activity on a server running AwesomeOS - Web Hosting Server software, unless your server is hosting a service for the AwesomeOS - Web Hosting Server community at large.
 
 ## Our Standards
 
@@ -40,7 +40,7 @@ We will remove, edit, or reject comments, commits, code, wiki edits, issues, and
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project lead, [Joshua Tauberer](https://razor.occams.info/). All reports will be treated confidentially, impartially, consistently, and swiftly.
 
-Because the need for confidentiality for all parties involved in an enforcement action outweighs the goals of openness, limited information will be shared with the DIREKTSPEED-Hosting community regarding enforcement actions that have taken place.
+Because the need for confidentiality for all parties involved in an enforcement action outweighs the goals of openness, limited information will be shared with the AwesomeOS - Web Hosting Server community regarding enforcement actions that have taken place.
 
 ## Attribution
 

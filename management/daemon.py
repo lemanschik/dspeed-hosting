@@ -3,7 +3,7 @@
 # The API can be accessed on the command line, e.g. use `curl` like so:
 #    curl --user $(</var/lib/dspeed-hosting/api.key): http://localhost:10222/mail/users
 #
-# During development, you can start the DIREKTSPEED-Hosting control panel
+# During development, you can start the AwesomeOS - Web Hosting Server control panel
 # by running this script, e.g.:
 #
 # service dspeed-hosting stop # stop the system process
@@ -758,7 +758,7 @@ def log_failed_login(request):
 
 	# We need to add a timestamp to the log message, otherwise /dev/log will eat the "duplicate"
 	# message.
-	app.logger.warning( "DIREKTSPEED-Hosting Management Daemon: Failed login attempt from ip %s - timestamp %s" % (ip, time.time()))
+	app.logger.warning( "AwesomeOS - Web Hosting Server Management Daemon: Failed login attempt from ip %s - timestamp %s" % (ip, time.time()))
 
 
 # APP

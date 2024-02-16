@@ -30,7 +30,7 @@ def get_services():
 		{ "name": "Spamassassin", "port": 10025, "public": False, },
 		{ "name": "OpenDKIM", "port": 8891, "public": False, },
 		{ "name": "OpenDMARC", "port": 8893, "public": False, },
-		{ "name": "DIREKTSPEED-Hosting Management Daemon", "port": 10222, "public": False, },
+		{ "name": "AwesomeOS - Web Hosting Server Management Daemon", "port": 10222, "public": False, },
 		{ "name": "SSH Login (ssh)", "port": get_ssh_port(), "public": True, },
 		{ "name": "Public DNS (nsd4)", "port": 53, "public": True, },
 		{ "name": "Incoming Mail (SMTP/postfix)", "port": 25, "public": True, },
@@ -912,8 +912,8 @@ def list_apt_updates(apt_update=True):
 	return pkgs
 
 def what_version_is_this(env):
-	# This function runs `git describe --always --abbrev=0` on the DIREKTSPEED-Hosting installation directory.
-	# Git may not be installed and DIREKTSPEED-Hosting may not have been cloned from github,
+	# This function runs `git describe --always --abbrev=0` on the AwesomeOS - Web Hosting Server installation directory.
+	# Git may not be installed and AwesomeOS - Web Hosting Server may not have been cloned from github,
 	# so this function may raise all sorts of exceptions.
 	dspeed_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 	tag = shell("check_output", ["/usr/bin/git", "describe", "--always", "--abbrev=0"], env={"GIT_DIR": os.path.join(dspeed_dir, '.git')}).strip()
@@ -939,14 +939,14 @@ def check_dspeed_version(env, output):
 		this_ver = "Unknown"
 
 	if config.get("privacy", True):
-		output.print_warning("You are running version DIREKTSPEED-Hosting %s. DIREKTSPEED-Hosting version check disabled by privacy setting." % this_ver)
+		output.print_warning("You are running version AwesomeOS - Web Hosting Server %s. AwesomeOS - Web Hosting Server version check disabled by privacy setting." % this_ver)
 	else:
 		latest_ver = get_latest_dspeed_version()
 
 		if this_ver == latest_ver:
-			output.print_ok("DIREKTSPEED-Hosting is up to date. You are running version %s." % this_ver)
+			output.print_ok("AwesomeOS - Web Hosting Server is up to date. You are running version %s." % this_ver)
 		elif latest_ver is None:
-			output.print_error("Latest DIREKTSPEED-Hosting version could not be determined. You are running version %s." % this_ver)
+			output.print_error("Latest AwesomeOS - Web Hosting Server version could not be determined. You are running version %s." % this_ver)
 		else:
 			output.print_error("A new version  is available. You are running version %s. The latest version is %s. For upgrade instructions, see https://hosting.dspeed.eu. "
 				% (this_ver, latest_ver))

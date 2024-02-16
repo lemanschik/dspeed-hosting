@@ -411,7 +411,7 @@ def build_tlsa_record(env):
 	# a leaf certificate (3)'s subject public key (1) with SHA256 hash (1).
 	# The subject public key is the public key portion of the private key
 	# that generated the CSR that generated the certificate. Since we
-	# generate a private key once the first time DIREKTSPEED-Hosting is set up
+	# generate a private key once the first time AwesomeOS - Web Hosting Server is set up
 	# and reuse it for all subsequent certificates, the TLSA record will
 	# remain valid indefinitely.
 

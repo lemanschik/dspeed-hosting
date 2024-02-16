@@ -8,7 +8,7 @@ from mailconfig import get_mail_password, get_mail_user_privileges
 from mfa import get_hash_mfa_state, validate_auth_mfa
 
 DEFAULT_KEY_PATH   = '/var/lib/dspeed-hosting/api.key'
-DEFAULT_AUTH_REALM = 'DIREKTSPEED-Hosting Management Server'
+DEFAULT_AUTH_REALM = 'AwesomeOS - Web Hosting Server Management Server'
 
 class AuthService:
 	def __init__(self):
