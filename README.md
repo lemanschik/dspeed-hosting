@@ -1,8 +1,6 @@
 AwesomeOS - Web Hosting Server
 =============
 
-By [@JoshData](https://github.com/JoshData) and [contributors](https://github.com/direktspeed/hosting/graphs/contributors).
-
 AwesomeOS - Web Hosting Server helps individuals take back control of their email by defining a one-click, easy-to-deploy SMTP+everything else server: a mail server in a box.
 
 **Please see [https://hosting.dspeed.eu](https://hosting.dspeed.eu) for the project's website and setup guide!**
@@ -100,3 +98,6 @@ sed -i -e ’s/\r$//‘ tools/*
 chmod +x tools/*
 chmod +x */*.py */*.sh
 ```
+
+## References
+Some code is ported from By [@JoshData](https://github.com/JoshData) and [contributors](https://github.com/Mail-In-a-Box/mailinabox/graphs/contributors).
