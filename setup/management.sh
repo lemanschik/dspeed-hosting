@@ -23,9 +23,30 @@ hide_output pip3 install --upgrade b2sdk boto3
 
 # Create a virtualenv for the installation of Python 3 packages
 # used by the management daemon.
+## replicated in ./management.sh
+# used by the management daemon.
 inst_dir=/usr/local/lib/mailinabox
 mkdir -p $inst_dir
 venv=$inst_dir/env
+if [ ! -d $venv ]; then
+    if apt-cache show "pip3-venv" >/dev/null 2>&1; then
+        apt-get -q -q update	
+        apt_get_quiet install dialog python3 python3-pip python3-dev python3-venv || exit 1
+        # Ubuntu 24.04 and Python 3.12 requires venv
+        # export DEB_PYTHON_INSTALL_LAYOUT='deb'
+        hide_output python3 -m venv $venv
+
+        source $venv/bin/activate
+        # Upgrade pip because the Ubuntu-packaged version is out of date.
+        hide_output $venv/bin/pip install --upgrade pip
+        
+        # Installing email_validator is repeated in setup/management.sh, but in setup/management.sh
+        # we install it inside a virtualenv. In this script, we don't have the virtualenv yet
+        # so we install the python package globally.
+        hide_output $venv/bin/pip install "email_validator>=1.0.0" || exit 1
+    fi
+fi
+
 if [ ! -d $venv ]; then
 	# A bug specific to Ubuntu 22.04 and Python 3.10 requires
 	# forcing a virtualenv directory layout option (see #2335
@@ -107,7 +128,7 @@ chmod +x $inst_dir/start
 cp --remove-destination conf/mailinabox.service /lib/systemd/system/mailinabox.service # target was previously a symlink so remove it first
 hide_output systemctl link -f /lib/systemd/system/mailinabox.service
 hide_output systemctl daemon-reload
-hide_output systemctl enable mailinabox.service
+hide_output systemctl enable $(readlink -f /etc/systemd/system/mailinabox.service)
 
 # Perform nightly tasks at 3am in system time: take a backup, run
 # status checks and email the administrator any changes.
