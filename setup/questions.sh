@@ -22,6 +22,8 @@ if [ ! -d $venv ]; then
         # so we install the python package globally.
         hide_output $venv/bin/pip install "email_validator>=1.0.0" || exit 1
     fi
+else
+    source $venv/bin/activate
 fi
   
 if [ -z "${NONINTERACTIVE:-}" ]; then
