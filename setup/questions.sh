@@ -23,7 +23,7 @@ if [ ! -d $venv ]; then
         hide_output $venv/bin/pip install "email_validator>=1.0.0" || exit 1
     fi
 fi
-        
+  
 if [ -z "${NONINTERACTIVE:-}" ]; then
 	# Install 'dialog' so we can ask the user questions. The original motivation for
 	# this was being able to ask the user for input even if stdin has been redirected,
