@@ -23,8 +23,17 @@ echo "Installing SpamAssassin..."
 apt_install spampd razor pyzor dovecot-antispam libmail-dkim-perl
 
 # Allow spamassassin to download new rules.
+if [ -f "/etc/default/spamassassin" ]; then
 tools/editconf.py /etc/default/spamassassin \
 	CRON=1
+fi
+
+## Upgrade 24.04
+# Allow spamd to download new rules.
+if [ -f "/etc/default/spamassassin" ]; then
+tools/editconf.py /etc/default/spamd \
+	CRON=1
+fi
 
 # Configure pyzor, which is a client to a live database of hashes of
 # spam emails. Set the pyzor configuration directory to something sane.
