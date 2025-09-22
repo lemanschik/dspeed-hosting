@@ -6,7 +6,7 @@ inst_dir=/usr/local/lib/mailinabox
 mkdir -p $inst_dir
 venv=$inst_dir/env
 if [ ! -d $venv ]; then
-    if apt-cache show "pip3-venv" >/dev/null 2>&1; then
+    if apt-cache show "python3-venv" >/dev/null 2>&1; then
         apt-get -q -q update	
         apt_get_quiet install dialog python3 python3-pip python3-dev python3-venv || exit 1
         # Ubuntu 24.04 and Python 3.12 requires venv
