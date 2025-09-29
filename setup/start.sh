@@ -2,6 +2,10 @@
 # This is the entry point for configuring the system.
 #####################################################
 
+#!/bin/bash
+# This is the entry point for configuring the system.
+#####################################################
+
 # Get the full path to the script, resolving symlinks
 SCRIPT_FULL_PATH="$(readlink -f "$0")"
 # Get the directory of the script
@@ -52,6 +56,8 @@ fi
 # EOF
 
 ## End of Environment Discovery.
+
+
 
 # Check system setup: Are we running as root on Ubuntu >= 22.04 on a
 # machine with enough memory? Is /tmp mounted with exec.
