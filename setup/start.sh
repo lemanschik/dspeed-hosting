@@ -190,20 +190,20 @@ MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
 EOF
 
 # Start service configuration.
-source setup/system.sh
-source setup/ssl.sh
-source setup/dns.sh
-source setup/mail-postfix.sh
-source setup/mail-dovecot.sh
-source setup/mail-users.sh
-source setup/dkim.sh
-source setup/spamassassin.sh
-source setup/web.sh
-source setup/webmail.sh
-source setup/nextcloud.sh
-source setup/zpush.sh
-source setup/management.sh
-source setup/munin.sh
+source $SCRIPT_DIR/system.sh
+source $SCRIPT_DIR/ssl.sh
+source $SCRIPT_DIR/dns.sh
+source $SCRIPT_DIR/mail-postfix.sh
+source $SCRIPT_DIR/mail-dovecot.sh
+source $SCRIPT_DIR/mail-users.sh
+source $SCRIPT_DIR/dkim.sh
+source $SCRIPT_DIR/spamassassin.sh
+source $SCRIPT_DIR/web.sh
+source $SCRIPT_DIR/webmail.sh
+source $SCRIPT_DIR/nextcloud.sh
+source $SCRIPT_DIR/zpush.sh
+source $SCRIPT_DIR/management.sh
+source $SCRIPT_DIR/munin.sh
 
 # Wait for the management daemon to start...
 until nc -z -w 4 127.0.0.1 10222
@@ -214,15 +214,15 @@ done
 
 # ...and then have it write the DNS and nginx configuration files and start those
 # services.
-tools/dns_update
-tools/web_update
+$PARENT_DIR/tools/dns_update
+$PARENT_DIR/tools/web_update
 
 # Give fail2ban another restart. The log files may not all have been present when
 # fail2ban was first configured, but they should exist now.
 restart_service fail2ban
 
 # If there aren't any mail users yet, create one.
-source setup/firstuser.sh
+source $SCRIPT_DIR/firstuser.sh
 
 # Register with Let's Encrypt, including agreeing to the Terms of Service.
 # We'd let certbot ask the user interactively, but when this script is
