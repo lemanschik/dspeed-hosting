@@ -2,12 +2,44 @@
 # This is the entry point for configuring the system.
 #####################################################
 
-source setup/functions.sh # load our functions
+# Get the full path to the script, resolving symlinks
+SCRIPT_FULL_PATH="$(readlink -f "$0")"
+# Get the directory of the script
+SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
+# To get the parent directory of that directory (i.e., one level up)
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
 
-# Check system setup: Are we running as root on Ubuntu 18.04 on a
+echo "Script Dir: $SCRIPT_DIR"
+echo "Parent Dir: $PARENT_DIR"
+echo "HOME: $MIAB_USER_DIR" 
+
+MIAB_USER_BIN=$MIAB_USER_DIR/.local/bin
+
+## uv gets installed here and all user local bins
+if [ ! -d $MIAB_USER_BIN ]; then
+    mkdir -p $MIAB_USER_BIN
+fi
+
+if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
+    echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
+else
+    source $MIAB_USER_DIR/.bashrc
+    source $MIAB_USER_DIR/.profile
+    if echo "$PATH" | grep -q "$HOME/.local/bin"; then
+        echo "✅ $MIAB_USER_DIR//.local/bin is in the PATH."
+    else
+        echo "❌ $MIAB_USER_DIR/.local/bin is NOT in the PATH."
+        exit 1
+    fi
+fi
+
+## End of Environment Discovery.
+
+# Check system setup: Are we running as root on Ubuntu >= 22.04 on a
 # machine with enough memory? Is /tmp mounted with exec.
 # If not, this shows an error and exits.
-source setup/preflight.sh
+source $SCRIPT_DIR/preflight.sh
 
 # Ensure Python reads/writes files in UTF-8. If the machine
 # triggers some other locale in Python, like ASCII encoding,
@@ -26,6 +58,55 @@ export LC_TYPE=en_US.UTF-8
 
 # Fix so line drawing characters are shown correctly in Putty on Windows. See #744.
 export NCURSES_NO_UTF8_ACS=1
+
+venv=$PARENT_DIR/.venv
+## we should be here /home/user/mailinabox
+cd $PARENT_DIR
+
+PYTHON3_PKGS="python3 python3-pip python3-dev python3-venv" 
+
+# load our functions
+# TODO: EXPORTS also PHP_VER but why
+source $SCRIPT_DIR/functions.sh 
+
+# NOTE: 
+# "apt_install" is a alias for "apt_get_quiet install"
+
+if [ ! -d $venv ]; then
+    apt-get -q -q update
+    if apt-cache show "python3-venv" >/dev/null 2>&1; then    
+        ## Ubuntu pre 23.04 does not got pipx as direct apt package
+        if apt-cache show "pipx" >/dev/null 2>&1; then
+            ## TODO: test what happens on diffrent ubuntu versions when we 
+            ## not manual instlal python and only use pipx
+            apt_install $PYTHON3_PKGS pipx || exit 1
+        else 
+            # Ubuntu pre 23.04 ships without apt package for pipx so we need python to install pipx
+            apt_install $PYTHON3_PKGS || exit 1
+            hide_output pip install pipx
+        fi
+        ## Install uv into /home/user/.local/bin path gets added by 
+        ## /home/user/.profile its ubuntu standard
+        ## hide_output obmitted to see failures if needed
+        pipx install uv
+
+        # hide_output python3 -m venv $venv
+        hide_output uv venv $venv
+        source $venv/bin/activate
+        
+        hide_output uv pip install --upgrade pip
+               
+        # Installing email_validator is repeated in setup/management.sh, but in setup/management.sh
+        # we install it inside a virtualenv. In this script, we don't have the virtualenv yet
+        # so we install the python package globally.
+        hide_output uv pip install "email_validator>=1.0.0" || exit 1
+    
+    fi
+else
+    source $venv/bin/activate
+fi
+
+## end of python setup
 
 # Recall the last settings used if we're running this a second time.
 if [ -f /etc/mailinabox.conf ]; then
@@ -46,24 +127,29 @@ fi
 # in the first dialog prompt, so we should do this before that starts.
 cat > /usr/local/bin/mailinabox << EOF;
 #!/bin/bash
-cd $PWD
-source setup/start.sh
+cd $PARENT_DIR
+source $SCRIPT_DIR/start.sh
 EOF
+
 chmod +x /usr/local/bin/mailinabox
+
+
+## Used to show dialogs
+apt_install dialog || exit 1
 
 # Ask the user for the PRIMARY_HOSTNAME, PUBLIC_IP, and PUBLIC_IPV6,
 # if values have not already been set in environment variables. When running
 # non-interactively, be sure to set values for all! Also sets STORAGE_USER and
 # STORAGE_ROOT.
-source setup/questions.sh
+source $SCRIPT_DIR/questions.sh
 
 # Run some network checks to make sure setup on this machine makes sense.
 # Skip on existing installs since we don't want this to block the ability to
 # upgrade, and these checks are also in the control panel status checks.
 if [ -z "${DEFAULT_PRIMARY_HOSTNAME:-}" ]; then
-if [ -z "${SKIP_NETWORK_CHECKS:-}" ]; then
-	source setup/network-checks.sh
-fi
+    if [ -z "${SKIP_NETWORK_CHECKS:-}" ]; then
+    	source $SCRIPT_DIR/network-checks.sh
+    fi
 fi
 
 # Create the STORAGE_USER and STORAGE_ROOT directory if they don't already exist.
