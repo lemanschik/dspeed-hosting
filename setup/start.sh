@@ -6,6 +6,7 @@
 SCRIPT_FULL_PATH="$(readlink -f "$0")"
 # Get the directory of the script
 SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
+SETUP_DIR=$SCRIPT_DIR
 # To get the parent directory of that directory (i.e., one level up)
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
@@ -13,12 +14,14 @@ MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
 echo "Script Dir: $SCRIPT_DIR"
 echo "Parent Dir: $PARENT_DIR"
 echo "HOME: $MIAB_USER_DIR" 
-
-MIAB_USER_BIN=$MIAB_USER_DIR/.local/bin
+echo "PREV_PWD: $PWD" 
+## we should be here /home/MIAB_USER_DIR/mailinabox
+cd $PARENT_DIR
+echo "PWD: $PWD"
 
 ## uv gets installed here and all user local bins
-if [ ! -d $MIAB_USER_BIN ]; then
-    mkdir -p $MIAB_USER_BIN
+if [ ! -d $MIAB_USER_DIR/.local/bin ]; then
+    mkdir -p $MIAB_USER_DIR/.local/bin
 fi
 
 if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
@@ -26,13 +29,27 @@ if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
 else
     source $MIAB_USER_DIR/.bashrc
     source $MIAB_USER_DIR/.profile
-    if echo "$PATH" | grep -q "$HOME/.local/bin"; then
-        echo "✅ $MIAB_USER_DIR//.local/bin is in the PATH."
+    if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
+        echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
     else
         echo "❌ $MIAB_USER_DIR/.local/bin is NOT in the PATH."
         exit 1
     fi
 fi
+
+if [ ! -f $MIAB_USER_DIR/.local/bin(mailinabox ]; then
+    ln -s $SCRIPT_DIR/start.sh $MIAB_USER_DIR/.local/bin/mailinabox
+    chmod +x $MIAB_USER_DIR/.local/bin/mailinabox
+fi
+
+
+# Put a start script in a global location. We tell the user to run 'mailinabox'
+# in the first dialog prompt, so we should do this before that starts.
+# cat > /usr/local/bin/mailinabox << EOF;
+# #!/bin/bash
+# cd $PARENT_DIR
+# source $SCRIPT_DIR/start.sh
+# EOF
 
 ## End of Environment Discovery.
 
@@ -40,6 +57,13 @@ fi
 # machine with enough memory? Is /tmp mounted with exec.
 # If not, this shows an error and exits.
 source $SCRIPT_DIR/preflight.sh
+
+# load our functions
+# TODO: EXPORTS also PHP_VER but why
+source $SCRIPT_DIR/functions.sh 
+
+# NOTE: 
+# "apt_install" is a alias for "apt_get_quiet install"
 
 # Ensure Python reads/writes files in UTF-8. If the machine
 # triggers some other locale in Python, like ASCII encoding,
@@ -60,17 +84,7 @@ export LC_TYPE=en_US.UTF-8
 export NCURSES_NO_UTF8_ACS=1
 
 venv=$PARENT_DIR/.venv
-## we should be here /home/user/mailinabox
-cd $PARENT_DIR
-
 PYTHON3_PKGS="python3 python3-pip python3-dev python3-venv" 
-
-# load our functions
-# TODO: EXPORTS also PHP_VER but why
-source $SCRIPT_DIR/functions.sh 
-
-# NOTE: 
-# "apt_install" is a alias for "apt_get_quiet install"
 
 if [ ! -d $venv ]; then
     apt-get -q -q update
@@ -112,7 +126,7 @@ fi
 if [ -f /etc/mailinabox.conf ]; then
 	# Run any system migrations before proceeding. Since this is a second run,
 	# we assume we have Python already installed.
-	setup/migrate.py --migrate || exit 1
+	uv run $SCRIPT_DIR/migrate.py --migrate || exit 1
 
 	# Load the old .conf file to get existing configuration options loaded
 	# into variables with a DEFAULT_ prefix.
@@ -123,16 +137,7 @@ else
 	FIRST_TIME_SETUP=1
 fi
 
-# Put a start script in a global location. We tell the user to run 'mailinabox'
-# in the first dialog prompt, so we should do this before that starts.
-cat > /usr/local/bin/mailinabox << EOF;
-#!/bin/bash
-cd $PARENT_DIR
-source $SCRIPT_DIR/start.sh
-EOF
-
 chmod +x /usr/local/bin/mailinabox
-
 
 ## Used to show dialogs
 apt_install dialog || exit 1
