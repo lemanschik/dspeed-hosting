@@ -12,6 +12,12 @@ ICON_DIR="📁"
 
 ## for the inital setup we need to be root or a user that can call sudo
 
+## fastpath
+if [ ! -f $PWD/setup/start.sh ]; then
+    echo "Your not running this from inside the ~/mailinabox directory"
+    exit 1
+fi
+
 # --- 1. Identify the Original Calling User ---
 if [ "$EUID" -eq 0 ]; then
     # We are running as root (via sudo or otherwise)
@@ -30,10 +36,12 @@ else
     # Not running as root
     ORIGINAL_USER="$(whoami)"
     echo "$ICON_INFO Running as standard user: $ORIGINAL_USER"
-    
+    echo "Trying: sudo $0"
+    sudo "$0"
 fi
 
 ## Default if this does not work we need to do all the other magic
+## We can not trust $HOME as when this is a sudo env HOME will not match.
 if [ ! -d $ORIGINAL_USER/mailinabox ]; then
     # Get the full path to the script, resolving symlinks
     SCRIPT_FULL_PATH="$(readlink -f "$0")"
