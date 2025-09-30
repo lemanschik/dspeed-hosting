@@ -1,8 +1,9 @@
 #!/bin/bash
-sudo env PATH="$PATH" sh -c '
+sudo env PATH="$PATH" miab setup/start.sh
+#sh -c '
     # This runs as root, but MIAB_USER_DIR is available
     # if [ ! -d "$MIAB_USER_DIR/dependencies" ]; then
     #    mkdir -p "$MIAB_USER_DIR/dependencies"
     # fi
-    miab "setup/start.sh"
-'
+#    miab "setup/start.sh"
+#'
