@@ -12,16 +12,18 @@ ICON_DIR="📁"
 
 ## for the inital setup we need to be root or a user that can call sudo
 
+# 1. Get the correct HOME FOLDER and execute as Root
 ## fastpath
 if [ ! -f $PWD/setup/start.sh ]; then
     echo "Your not running this from inside the ~/mailinabox directory"
+    echo "run: cd ~/mailinabox && setup/start.sh"
     exit 1
 fi
 
 # --- 1. Identify the Original Calling User ---
-if [ "$EUID" -eq 0 ]; then
+if [[ "$EUID" -eq 0 && "$HOME" == "/root" ]]; then
+    echo "Running as root in /root"
     # We are running as root (via sudo or otherwise)
-    
     if [ -n "$SUDO_USER" ]; then
         # Running via sudo, SUDO_USER gives the original user's name (best case)
         ORIGINAL_USER="$SUDO_USER"
@@ -31,51 +33,98 @@ if [ "$EUID" -eq 0 ]; then
         # We fall back to checking the real user ID ($UID)
         ORIGINAL_USER="$(id -un "$UID")"
         echo "$ICON_INFO Running as root. Original caller identified via \$UID: $ORIGINAL_USER"
+        echo "Your Running not on a unmodifyed host as you did manual call su or directly logged in as root!"
+        echo "Your Alone do not post issues if this does not work!!!"
     fi
-else
-    # Not running as root
-    ORIGINAL_USER="$(whoami)"
-    echo "$ICON_INFO Running as standard user: $ORIGINAL_USER"
-    echo "Trying: sudo $0"
-    sudo "$0"
+    # --- 2. Determine the Correct Home Directory ---
+
+    # Use getent passwd (a robust system call) to look up the home directory
+    # of the identified ORIGINAL_USER, overriding the derived path based on script location.
+    USER_HOME_DIR=$(getent passwd "$ORIGINAL_USER" | cut -d: -f6)
+
+    if [ -z "$USER_HOME_DIR" ]; then
+        echo "$ICON_FAILURE FATAL: Could not determine home directory for user $ORIGINAL_USER." >&2
+        exit 1
+    fi
+
+    # Set the critical variable used throughout the script
+    MIAB_USER_DIR="$USER_HOME_DIR"
+    echo "$ICON_DIR User Home (MIAB_USER_DIR) set to: $MIAB_USER_DIR"
+    export HOME=$MIAB_USER_DIR
 fi
 
+if [[ "$EUID" -eq 0 && "$HOME" != "/root" ]]; then
+    echo "Not Running as root in /root"
+    ORIGINAL_USER="$(whoami)"
+    ## miab setup should start
+else
+    echo "$ICON_INFO Running as standard user: $ORIGINAL_USER"
+    DIR=~/.local; SYSTEM=linux-x64; MIRROR=https://nodejs.org/dist; VERSION=$(curl -s $MIRROR/index.json | grep -m1 -o '"version":"v[0-9.]*"' | cut -d'"' -f4); curl -sL $MIRROR/$VERSION/node-$VERSION-$SYSTEM.tar.gz | tar -xvz --strip-components=1 -C $DIR --exclude='./*.md' --exclude='LICENSE'
+    DIR=~/.local/bin; VERSION=0.8.22 curl -L https://github.com/astral-sh/uv/releases/download/$VERSION/uv-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C $DIR -xzf -
+    echo "Trying: sudo $0"
+    sudo env HOME=$HOME PATH=$PATH "$0"
+    exit 0
+fi
+
+## 2. Get miab dir
+
 ## Default if this does not work we need to do all the other magic
-## We can not trust $HOME as when this is a sudo env HOME will not match.
-if [ ! -d $ORIGINAL_USER/mailinabox ]; then
+if [ ! -d ~/mailinabox ]; then
     # Get the full path to the script, resolving symlinks
     SCRIPT_FULL_PATH="$(readlink -f "$0")"
     # Get the directory of the script
     SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
     SETUP_DIR=$SCRIPT_DIR
     # To get the parent directory of that directory (i.e., one level up)
+    # should be $USER_HOME_DIR/mailinabox in ideal case.
     PARENT_DIR="$(dirname "$SCRIPT_DIR")"
-    MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
-    
+    EXPECTED_HOME=$(dirname "$PARENT_DIR")
+
+    if [ "$USER_HOME_DIR" == "$EXPECTED_HOME" ]; then
+        echo "Successfully autodetected alternative mailinabox directory at $PARENT_DIR"
+    else
+        echo "ERROR: Variables are NOT equal. $EXPECTED_HOME != $USER_HOME_DIR" >&2
+        echo "Suggestion to fix that run: mv $PARENT_DIR $USER_HOME_DIR/mailinabox"
+        echo " "
+        echo "Mailinabox should always be cloned directly into $USER_HOME_DIR/mailinabox"
+        echo "when you do a fresh setup next time run: git clone <repo> ~/mailinabox"
+        echo "Then Everything should work out of the box"
+        exit 1
+    fi
+
     echo "Script Dir: $SCRIPT_DIR"
     echo "Parent Dir: $PARENT_DIR"
-    echo "HOME: $MIAB_USER_DIR" 
-    echo "PREV_PWD: $PWD" 
+    echo "HOME: $USER_HOME_DIR"
 else
-    PARENT_DIR=/home/$ORIGINAL_USER/mailinabox
-    MIAB_USER_DIR=/home/$ORIGINAL_USER
+    PARENT_DIR=$USER_HOME_DIR/mailinabox
 fi
+    DIR=~/.local; SYSTEM=linux-x64; MIRROR=https://nodejs.org/dist; VERSION=$(curl -s $MIRROR/index.json | grep -m1 -o '"version":"v[0-9.]*"' | cut -d'"' -f4); curl -sL $MIRROR/$VERSION/node-$VERSION-$SYSTEM.tar.gz | tar -xvz --strip-components=1 -C $DIR --exclude='./*.md' --exclude='LICENSE'
+    VERSION=0.8.22 curl -L https://github.com/astral-sh/uv/releases/download/$VERSION/uv-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C ~/.local/bin -xzf -
+
+
+
+
+
 
 ## we should be here /home/MIAB_USER_DIR/mailinabox
-cd $PARENT_DIR
-echo "PWD: $PWD"
-
+## All scripts that run this should ensure that.
+# cd $PARENT_DIR
+# echo "PWD: $PWD"
 
 ## uv gets installed here and all user local bins
-if [ ! -d $MIAB_USER_DIR/.local/bin ]; then
-    mkdir -p $MIAB_USER_DIR/.local/bin
+if [ ! -d $USER_HOME_DIR/.local/bin ]; then
+    mkdir -p $USER_HOME_DIR/.local/bin
 fi
 
-if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
-    echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
+if echo "$PATH" | grep -q "$USER_HOME_DIR/.local/bin"; then
+    echo "✅ $USER_HOME_DIR/.local/bin is in the PATH."
 else
-    source $MIAB_USER_DIR/.bashrc
-    source $MIAB_USER_DIR/.profile
+    ## When we run via sudo our HOME would be /root
+    ## Manual align home
+    HOME=$USER_HOME_DIR
+    
+    source $USER_HOME_DIR/.bashrc
+    source $USER_HOME_DIR/.profile
     if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
         echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
     else
@@ -84,11 +133,10 @@ else
     fi
 fi
 
-if [ ! -f $MIAB_USER_DIR/.local/bin(mailinabox ]; then
-    ln -s $SCRIPT_DIR/start.sh $MIAB_USER_DIR/.local/bin/mailinabox
-    chmod +x $MIAB_USER_DIR/.local/bin/mailinabox
+if [ ! -f $USER_HOME_DIR/.local/bin/mailinabox ]; then
+    ln -s $USER_HOME_DIR/start.sh $USER_HOME_DIR/.local/bin/mailinabox
+    chmod +x $USER_HOME_DIR/.local/bin/mailinabox
 fi
-
 
 # Put a start script in a global location. We tell the user to run 'mailinabox'
 # in the first dialog prompt, so we should do this before that starts.
