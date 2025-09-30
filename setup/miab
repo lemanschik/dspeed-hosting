@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# --- Input Validation ---
+if [ -z "$1" ]; then
+    echo "ERROR: Please supply a valid path to a file." >&2
+    exit 1
+fi
+
+FILE_TO_EXECUTE="$1"
+
+# --- File Existence Check ---
+if [ ! -f "$FILE_TO_EXECUTE" ]; then
+    echo "ERROR: File not found at path: '$FILE_TO_EXECUTE'" >&2
+    exit 1
+fi
+
+# --- Conditional Execution ---
+
+# Check if the filename ends with .py
+if [[ "$FILE_TO_EXECUTE" =~ \.py$ ]]; then
+    
+    # --- Python Execution (uv run) ---
+    echo "Detected Python script (.py). Executing via uv run..."
+    
+    # We use 'uv run' to execute the Python script within the project's detected environment.
+    uv run "$FILE_TO_EXECUTE"
+    EXECUTION_EXIT_CODE=$?
+    
+    ACTION="uv run"
+
+else
+    
+    # --- Standard Sourcing ---
+    echo "Detected non-Python script. Sourcing script: '$FILE_TO_EXECUTE'..."
+    
+    # Execute the script in the current shell context.
+    source "$FILE_TO_EXECUTE"
+    EXECUTION_EXIT_CODE=$?
+    
+    ACTION="Sourcing"
+    
+fi
+
+# --- Final Status Check ---
+
+if [ "$EXECUTION_EXIT_CODE" -eq 0 ]; then
+    echo "Successfully executed ($ACTION) '$FILE_TO_EXECUTE'."
+else
+    echo "ERROR: $ACTION failed. Script exited with non-zero status ($EXECUTION_EXIT_CODE)." >&2
+    exit "$EXECUTION_EXIT_CODE"
+fi
