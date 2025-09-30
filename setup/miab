@@ -1,121 +1,121 @@
 #!/bin/bash
 
-## -- Start Environment Discovery -- ##
-# Get the full path to the script, resolving symlinks
-# ~/mailinabox/setup/miab
-SCRIPT_FULL_PATH="$(readlink -f "$0")"
+# --- UTF-8 Icons for Status ---
+ICON_SUCCESS="✅"
+ICON_FAILURE="❌"
+ICON_INFO="ℹ️"
+ICON_COMMAND="🚀"
+ICON_FILE="📄"
 
-# Get the directory of the script
-# ~/mailinabox/setup
-SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
-SETUP_DIR=$SCRIPT_DIR
-
-# To get the parent directory of that directory (i.e., one level up)
-# ~/mailinabox
-PARENT_DIR="$(dirname "$SCRIPT_DIR")"
-# ~/ or lets say /home/ubuntu/
-MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
-
-# TODO: add some generic verification that we got cloned at last into
-# a home folder under our original name ~/mailinabox. 
-# eg: mailinabox
-
-echo "Script Dir: $SCRIPT_DIR"
-echo "Parent Dir: $PARENT_DIR"
-echo "HOME: $MIAB_USER_DIR" 
-echo "PREV_PWD: $PWD" 
-## we should be here /home/MIAB_USER_DIR/mailinabox
-cd $PARENT_DIR
-echo "PWD: $PWD"
-
-## uv gets installed here and all user local bins
-if [ ! -d $MIAB_USER_DIR/.local/bin ]; then
-    mkdir -p $MIAB_USER_DIR/.local/bin
-fi
-
-if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
-    echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
-else
-    source $MIAB_USER_DIR/.bashrc
-    source $MIAB_USER_DIR/.profile
-    if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
-        echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
-    else
-        echo "❌ $MIAB_USER_DIR/.local/bin is NOT in the PATH."
-        exit 1
+# --- Function to Safely Read Shebang ---
+get_shebang_interpreter() {
+    local file="$1"
+    local shebang_line=$(head -n 1 "$file" 2>/dev/null)
+    
+    if [[ "$shebang_line" =~ ^#\! ]]; then
+        echo "$shebang_line" | awk '{print $NF}' | xargs basename
     fi
-fi
-
-if [ ! -f $MIAB_USER_DIR/.local/bin(mailinabox ]; then
-    ln -s $SCRIPT_DIR/start.sh $MIAB_USER_DIR/.local/bin/mailinabox
-    chmod +x $MIAB_USER_DIR/.local/bin/mailinabox
-fi
-
-# Put a start script in a global location. We tell the user to run 'mailinabox'
-# in the first dialog prompt, so we should do this before that starts.
-# cat > /usr/local/bin/mailinabox << EOF;
-# #!/bin/bash
-# cd $PARENT_DIR
-# source $SCRIPT_DIR/start.sh
-# EOF
-
-## End of Environment Discovery.
+}
 
 # --- Input Validation ---
 if [ -z "$1" ]; then
-    echo "ERROR: Please supply a command or a valid path to a file." >&2
+    echo "$ICON_FAILURE ERROR: Please supply a command or a valid file path." >&2
     exit 1
 fi
 
 COMMAND_OR_FILE="$1"
-
-# --- EXECUTION LOGIC ---
-
 EXECUTION_EXIT_CODE=0
 ACTION=""
+
+# --- EXECUTION LOGIC ---
 
 # 1. Check for 'pip' commands
 if [[ "$COMMAND_OR_FILE" == pip* ]]; then
     
     ACTION="uv pip"
-    echo "Detected 'pip' command. Executing via uv pip..."
-    
-    # We pass the full command line argument list starting from $1
-    # Example: If called as './wrapper.sh pip install requests', this runs 'uv pip install requests'
+    echo "$ICON_COMMAND Detected 'pip' command. Executing via $ACTION..."
     uv pip "$@"
     EXECUTION_EXIT_CODE=$?
 
-# 2. Check for Python files (.py)
-elif [ -f "$COMMAND_OR_FILE" ] && [[ "$COMMAND_OR_FILE" =~ \.py$ ]]; then
-    
-    ACTION="uv run"
-    echo "Detected Python script (.py). Executing via uv run..."
-    
-    # We execute the script using uv run. Note: $1 is the path, $2, $3, etc. are args for the script.
-    uv run "$@"
-    EXECUTION_EXIT_CODE=$?
-
-# 3. Check for sourceable files (All other existing files)
+# 2. Handle files that exist
 elif [ -f "$COMMAND_OR_FILE" ]; then
-    
-    ACTION="Sourcing"
-    echo "Detected non-Python script. Sourcing script: '$COMMAND_OR_FILE'..."
-    
-    # Execute the script in the current shell context.
-    source "$COMMAND_OR_FILE"
-    EXECUTION_EXIT_CODE=$?
 
-# 4. Handle invalid input (Non-file, non-pip command)
+    # --- A. Check common extensions (Python, JavaScript, TypeScript) ---
+    
+    # Python Extensions (.py)
+    if [[ "$COMMAND_OR_FILE" =~ \.py$ ]]; then
+        ACTION="uv run (.py extension)"
+        echo "$ICON_FILE Detected Python script (.py). Executing via $ACTION..."
+        uv run "$@"
+        EXECUTION_EXIT_CODE=$?
+
+    # JavaScript Extensions (.js, .mjs, .cjs)
+    elif [[ "$COMMAND_OR_FILE" =~ \.(m|c)?js$ ]]; then
+        ACTION="node execution (JavaScript extension)"
+        echo "$ICON_FILE Detected JavaScript file. Executing via node..."
+        /usr/bin/env node "$@"
+        EXECUTION_EXIT_CODE=$?
+
+    # TypeScript Extensions (.ts, .mts, .cts)
+    elif [[ "$COMMAND_OR_FILE" =~ \.(m|c)?ts$ ]]; then
+        ACTION="node execution (TypeScript extension)"
+        echo "$ICON_FILE Detected TypeScript file. Executing via node with experimental flags..."
+        
+        /usr/bin/env node \
+            --experimental-strip-types \
+            --experimental-transform-types \
+            "$@"
+        
+        EXECUTION_EXIT_CODE=$?
+    
+    # --- B. Check Shebang for files without recognized extensions ---
+    else
+        
+        INTERPRETER=$(get_shebang_interpreter "$COMMAND_OR_FILE")
+
+        case "$INTERPRETER" in
+            bash|sh|zsh)
+                ACTION="Sourcing ($INTERPRETER shebang)"
+                echo "$ICON_INFO Detected shell script ($INTERPRETER shebang). Sourcing..."
+                source "$COMMAND_OR_FILE"
+                EXECUTION_EXIT_CODE=$?
+                ;;
+
+            python|python3)
+                ACTION="uv run (Python shebang)"
+                echo "$ICON_INFO Detected Python script (shebang). Executing via $ACTION..."
+                uv run "$@"
+                EXECUTION_EXIT_CODE=$?
+                ;;
+            
+            node|nodejs)
+                ACTION="node execution (Node shebang)"
+                echo "$ICON_INFO Detected Node.js script (shebang). Executing directly..."
+                /usr/bin/env node "$@"
+                EXECUTION_EXIT_CODE=$?
+                ;;
+
+            *)
+                # Fallback: Assume sourcing for environment setup
+                ACTION="Sourcing (fallback)"
+                echo "$ICON_INFO File has no recognized extension or shebang. Falling back to Sourcing..."
+                source "$COMMAND_OR_FILE"
+                EXECUTION_EXIT_CODE=$?
+                ;;
+        esac
+    fi
+
+# 3. Handle invalid input
 else
-    echo "ERROR: Input '$COMMAND_OR_FILE' is not a known 'pip' command or a valid file path." >&2
+    echo "$ICON_FAILURE ERROR: Input '$COMMAND_OR_FILE' is not a known 'pip' command or a valid file path." >&2
     exit 1
 fi
 
 # --- Final Status Check ---
 
 if [ "$EXECUTION_EXIT_CODE" -eq 0 ]; then
-    echo "Successfully executed ($ACTION)."
+    echo "$ICON_SUCCESS SUCCESS: $ACTION was successful."
 else
-    echo "ERROR: $ACTION failed. Execution exited with non-zero status ($EXECUTION_EXIT_CODE)." >&2
+    echo "$ICON_FAILURE FAILURE: $ACTION failed. Execution exited with status ($EXECUTION_EXIT_CODE)." >&2
     exit "$EXECUTION_EXIT_CODE"
 fi
