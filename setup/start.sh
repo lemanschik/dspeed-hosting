@@ -13,12 +13,6 @@ ICON_DIR="📁"
 ## for the inital setup we need to be root or a user that can call sudo
 
 # 1. Get the correct HOME FOLDER and execute as Root
-## fastpath
-if [ ! -f $PWD/setup/start.sh ]; then
-    echo "Your not running this from inside the ~/mailinabox directory"
-    echo "run: cd ~/mailinabox && setup/start.sh"
-    exit 1
-fi
 
 # --- 1. Identify the Original Calling User ---
 if [[ "$EUID" -eq 0 && "$HOME" == "/root" ]]; then
@@ -54,16 +48,36 @@ if [[ "$EUID" -eq 0 && "$HOME" == "/root" ]]; then
 fi
 
 if [[ "$EUID" -eq 0 && "$HOME" != "/root" ]]; then
-    echo "Not Running as root in /root"
-    ORIGINAL_USER="$(whoami)"
     ## miab setup should start
 else
     echo "$ICON_INFO Running as standard user: $ORIGINAL_USER"
-    DIR=~/.local; SYSTEM=linux-x64; MIRROR=https://nodejs.org/dist; VERSION=$(curl -s $MIRROR/index.json | grep -m1 -o '"version":"v[0-9.]*"' | cut -d'"' -f4); curl -sL $MIRROR/$VERSION/node-$VERSION-$SYSTEM.tar.gz | tar -xvz --strip-components=1 -C $DIR --exclude='./*.md' --exclude='LICENSE'
-    DIR=~/.local/bin; VERSION=0.8.22 curl -L https://github.com/astral-sh/uv/releases/download/$VERSION/uv-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C $DIR -xzf -
     echo "Trying: sudo $0"
     sudo env HOME=$HOME PATH=$PATH "$0"
     exit 0
+fi
+
+# Best case Fresh ubuntu profile!
+if [ ! -d ~/.local/bin ]; then
+    mkdir -p ~/local/bin
+fi
+
+# Install npm npx node & uv uvx
+if [ ! -f ~/.local/bin/uv ]; then
+  DIR=~/.local; SYSTEM=linux-x64; MIRROR=https://nodejs.org/dist; VERSION=$(curl -sL $MIRROR/index.json | grep -m1 -o '"version":"v[0-9.]*"' | cut -d'"' -f4); curl -sL $MIRROR/$VERSION/node-$VERSION-$SYSTEM.tar.gz | tar -xvz --strip-components=1 -C $DIR --exclude='./*.md' --exclude='LICENSE'
+  DIR=~/.local/bin; VERSION=0.8.22 curl -sL https://github.com/astral-sh/uv/releases/download/$VERSION/uv-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C $DIR -xzf -
+fi
+
+if echo "$PATH" | grep -q "$HOME/.local/bin"; then
+    echo "✅ $HOME/.local/bin is in the PATH."
+else   
+    source ~/.bashrc
+    source ~/.profile
+    if echo "$PATH" | grep -q "$HOME/.local/bin"; then
+        echo "✅ $HOME/.local/bin is in the PATH."
+    else
+        echo "❌ $HOME/.local/bin is NOT in the PATH."
+        exit 1
+    fi
 fi
 
 ## 2. Get miab dir
@@ -81,61 +95,37 @@ if [ ! -d ~/mailinabox ]; then
     EXPECTED_HOME=$(dirname "$PARENT_DIR")
 
     if [ "$USER_HOME_DIR" == "$EXPECTED_HOME" ]; then
-        echo "Successfully autodetected alternative mailinabox directory at $PARENT_DIR"
+        echo "Successfully autodetected alternative mailinabox directory at."
+        echo "Parent Dir: $PARENT_DIR"
+        echo "Script Dir: $SCRIPT_DIR"
     else
         echo "ERROR: Variables are NOT equal. $EXPECTED_HOME != $USER_HOME_DIR" >&2
         echo "Suggestion to fix that run: mv $PARENT_DIR $USER_HOME_DIR/mailinabox"
         echo " "
-        echo "Mailinabox should always be cloned directly into $USER_HOME_DIR/mailinabox"
+        echo "Mailinabox should always be cloned directly into $HOME/mailinabox"
         echo "when you do a fresh setup next time run: git clone <repo> ~/mailinabox"
         echo "Then Everything should work out of the box"
         exit 1
     fi
-
-    echo "Script Dir: $SCRIPT_DIR"
-    echo "Parent Dir: $PARENT_DIR"
-    echo "HOME: $USER_HOME_DIR"
 else
     PARENT_DIR=$USER_HOME_DIR/mailinabox
+    SCRIPT_DIR=$PARENT_DIR/setup
 fi
-    DIR=~/.local; SYSTEM=linux-x64; MIRROR=https://nodejs.org/dist; VERSION=$(curl -s $MIRROR/index.json | grep -m1 -o '"version":"v[0-9.]*"' | cut -d'"' -f4); curl -sL $MIRROR/$VERSION/node-$VERSION-$SYSTEM.tar.gz | tar -xvz --strip-components=1 -C $DIR --exclude='./*.md' --exclude='LICENSE'
-    VERSION=0.8.22 curl -L https://github.com/astral-sh/uv/releases/download/$VERSION/uv-x86_64-unknown-linux-gnu.tar.gz | tar --strip-components=1 -C ~/.local/bin -xzf -
-
-
-
-
-
-
+    
 ## we should be here /home/MIAB_USER_DIR/mailinabox
 ## All scripts that run this should ensure that.
-# cd $PARENT_DIR
-# echo "PWD: $PWD"
+cd $PARENT_DIR
 
-## uv gets installed here and all user local bins
-if [ ! -d $USER_HOME_DIR/.local/bin ]; then
-    mkdir -p $USER_HOME_DIR/.local/bin
+if [ ! -f $PWD/setup/start.sh ]; then
+    ## Note this should never happen we did cd above!
+    echo "Your not running this from inside the ~/mailinabox directory"
+    echo "run: cd ~/mailinabox && setup/start.sh"
+    exit 1
 fi
 
-if echo "$PATH" | grep -q "$USER_HOME_DIR/.local/bin"; then
-    echo "✅ $USER_HOME_DIR/.local/bin is in the PATH."
-else
-    ## When we run via sudo our HOME would be /root
-    ## Manual align home
-    HOME=$USER_HOME_DIR
-    
-    source $USER_HOME_DIR/.bashrc
-    source $USER_HOME_DIR/.profile
-    if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
-        echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
-    else
-        echo "❌ $MIAB_USER_DIR/.local/bin is NOT in the PATH."
-        exit 1
-    fi
-fi
-
-if [ ! -f $USER_HOME_DIR/.local/bin/mailinabox ]; then
-    ln -s $USER_HOME_DIR/start.sh $USER_HOME_DIR/.local/bin/mailinabox
-    chmod +x $USER_HOME_DIR/.local/bin/mailinabox
+if [ ! -f $HOME/.local/bin/mailinabox ]; then
+    ln -s $PARENT_DIR/setup/start.sh ~/.local/bin/mailinabox
+    chmod +x ~/.local/bin/mailinabox
 fi
 
 # Put a start script in a global location. We tell the user to run 'mailinabox'
@@ -147,8 +137,6 @@ fi
 # EOF
 
 ## End of Environment Discovery.
-
-
 
 # Check system setup: Are we running as root on Ubuntu >= 22.04 on a
 # machine with enough memory? Is /tmp mounted with exec.
@@ -289,6 +277,7 @@ PUBLIC_IPV6=$PUBLIC_IPV6
 PRIVATE_IP=$PRIVATE_IP
 PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
+MIAB_DIR=$PARENT_DIR
 EOF
 
 # Start service configuration.
@@ -337,7 +326,8 @@ echo "Mail-in-a-Box uses Let's Encrypt to provision free SSL/TLS certificates"
 echo "to enable HTTPS connections to your box. We're automatically"
 echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
 echo
-certbot register --register-unsafely-without-email --agree-tos --config-dir "$STORAGE_ROOT/ssl/lets_encrypt"
+certbot register --register-unsafely-without-email --agree-tos 
+# --config-dir "$STORAGE_ROOT/ssl/lets_encrypt"
 fi
 
 # Done.
