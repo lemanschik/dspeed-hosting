@@ -30,10 +30,7 @@ SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
 SETUP_DIR="$SCRIPT_DIR"
 
 # Assuming structure is /home/user/mailinabox/management/this_script.sh
-# Parent Dir should be /home/user/mailinabox/
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
-
-# MIAB_USER_DIR should be /home/user/
 MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
 
 echo "$ICON_DIR Script Dir: $SCRIPT_DIR"
@@ -65,7 +62,6 @@ if echo "$PATH" | grep -q "$PATH_TO_CHECK"; then
 else
     echo "$ICON_INFO Attempting to fix PATH via sourcing .bashrc and .profile..."
     
-    # NOTE: Sourcing changes the current shell's environment, which is what we want.
     if [ -f "$MIAB_USER_DIR/.bashrc" ]; then
         source "$MIAB_USER_DIR/.bashrc" || true
     fi
@@ -81,22 +77,40 @@ else
     fi
 fi
 
-# Create symlink for mailinabox (fixing the syntax error in the original request)
-# Assuming the intention was to link start.sh to the user's local bin
-TARGET_LINK="$MIAB_USER_DIR/.local/bin/mailinabox"
-SOURCE_SCRIPT="$SCRIPT_DIR/start.sh"
+# ----------------------------------------------------------------------
+# Create Symlink 1: mailinabox (points to start.sh)
+# ----------------------------------------------------------------------
+TARGET_LINK_MAILINABOX="$MIAB_USER_DIR/.local/bin/mailinabox"
+SOURCE_SCRIPT_START="$SCRIPT_DIR/start.sh"
 
-if [ ! -L "$TARGET_LINK" ]; then
-    echo "$ICON_INFO Creating symlink: $TARGET_LINK -> $SOURCE_SCRIPT"
-    if [ -f "$SOURCE_SCRIPT" ]; then
-        if ! ln -s "$SOURCE_SCRIPT" "$TARGET_LINK"; then
-            echo "$ICON_FAILURE WARNING: Failed to create symlink $TARGET_LINK." >&2
+if [ ! -L "$TARGET_LINK_MAILINABOX" ]; then
+    echo "$ICON_INFO Creating symlink 'mailinabox' -> $SOURCE_SCRIPT_START"
+    if [ -f "$SOURCE_SCRIPT_START" ]; then
+        if ! ln -s "$SOURCE_SCRIPT_START" "$TARGET_LINK_MAILINABOX"; then
+            echo "$ICON_FAILURE WARNING: Failed to create symlink $TARGET_LINK_MAILINABOX." >&2
         else
-            chmod +x "$TARGET_LINK"
-            echo "$ICON_SUCCESS Symlink created and executable."
+            chmod +x "$TARGET_LINK_MAILINABOX"
+            echo "$ICON_SUCCESS Symlink 'mailinabox' created and executable."
         fi
     else
-        echo "$ICON_FAILURE WARNING: Source script $SOURCE_SCRIPT not found. Skipping symlink creation." >&2
+        echo "$ICON_FAILURE WARNING: Source script $SOURCE_SCRIPT_START not found. Skipping 'mailinabox' link." >&2
+    fi
+fi
+
+
+# ----------------------------------------------------------------------
+# Create Symlink 2: miab (points to the current wrapper script)
+# ----------------------------------------------------------------------
+TARGET_LINK_MIAB="$MIAB_USER_DIR/.local/bin/miab"
+SOURCE_SCRIPT_WRAPPER="$SCRIPT_FULL_PATH"
+
+if [ ! -L "$TARGET_LINK_MIAB" ]; then
+    echo "$ICON_INFO Creating CLI symlink 'miab' -> $SOURCE_SCRIPT_WRAPPER"
+    if ! ln -s "$SOURCE_SCRIPT_WRAPPER" "$TARGET_LINK_MIAB"; then
+        echo "$ICON_FAILURE WARNING: Failed to create CLI symlink $TARGET_LINK_MIAB." >&2
+    else
+        chmod +x "$TARGET_LINK_MIAB"
+        echo "$ICON_SUCCESS CLI symlink 'miab' created and executable."
     fi
 fi
 
