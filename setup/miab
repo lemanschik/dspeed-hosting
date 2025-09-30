@@ -6,6 +6,7 @@ ICON_FAILURE="❌"
 ICON_INFO="ℹ️"
 ICON_COMMAND="🚀"
 ICON_FILE="📄"
+ICON_DIR="📁"
 
 # --- Function to Safely Read Shebang ---
 get_shebang_interpreter() {
@@ -17,17 +18,94 @@ get_shebang_interpreter() {
     fi
 }
 
-# --- Input Validation ---
-if [ -z "$1" ]; then
-    echo "$ICON_FAILURE ERROR: Please supply a command or a valid file path." >&2
+# ==============================================================================
+# 1. ENVIRONMENT DISCOVERY AND SETUP (MIAB SPECIFIC)
+# ==============================================================================
+
+echo "$ICON_INFO Starting Environment Discovery and Setup..."
+
+# Get location variables
+SCRIPT_FULL_PATH="$(readlink -f "$0" || exit 1)"
+SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
+SETUP_DIR="$SCRIPT_DIR"
+
+# Assuming structure is /home/user/mailinabox/management/this_script.sh
+# Parent Dir should be /home/user/mailinabox/
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# MIAB_USER_DIR should be /home/user/
+MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
+
+echo "$ICON_DIR Script Dir: $SCRIPT_DIR"
+echo "$ICON_DIR Project Root (PARENT_DIR): $PARENT_DIR"
+echo "$ICON_DIR User Home (MIAB_USER_DIR): $MIAB_USER_DIR"
+echo "$ICON_INFO Current PWD: $PWD"
+
+# Change directory to the project root (essential for relative paths and uv)
+if ! cd "$PARENT_DIR"; then
+    echo "$ICON_FAILURE FATAL: Could not change directory to $PARENT_DIR." >&2
     exit 1
 fi
+echo "$ICON_SUCCESS PWD set to: $PWD"
+
+# Ensure .local/bin exists in the user's home directory
+if [ ! -d "$MIAB_USER_DIR/.local/bin" ]; then
+    echo "$ICON_INFO Creating $MIAB_USER_DIR/.local/bin..."
+    if ! mkdir -p "$MIAB_USER_DIR/.local/bin"; then
+        echo "$ICON_FAILURE FATAL: Could not create $MIAB_USER_DIR/.local/bin." >&2
+        exit 1
+    fi
+fi
+
+# Check and fix PATH environment variable
+PATH_TO_CHECK="$MIAB_USER_DIR/.local/bin"
+
+if echo "$PATH" | grep -q "$PATH_TO_CHECK"; then
+    echo "$ICON_SUCCESS $PATH_TO_CHECK is in the PATH."
+else
+    echo "$ICON_INFO Attempting to fix PATH via sourcing .bashrc and .profile..."
+    
+    # NOTE: Sourcing changes the current shell's environment, which is what we want.
+    if [ -f "$MIAB_USER_DIR/.bashrc" ]; then
+        source "$MIAB_USER_DIR/.bashrc" || true
+    fi
+    if [ -f "$MIAB_USER_DIR/.profile" ]; then
+        source "$MIAB_USER_DIR/.profile" || true
+    fi
+
+    if echo "$PATH" | grep -q "$PATH_TO_CHECK"; then
+        echo "$ICON_SUCCESS PATH successfully updated."
+    else
+        echo "$ICON_FAILURE FATAL: $PATH_TO_CHECK is NOT in the PATH after sourcing." >&2
+        exit 1
+    fi
+fi
+
+# Create symlink for mailinabox (fixing the syntax error in the original request)
+# Assuming the intention was to link start.sh to the user's local bin
+TARGET_LINK="$MIAB_USER_DIR/.local/bin/mailinabox"
+SOURCE_SCRIPT="$SCRIPT_DIR/start.sh"
+
+if [ ! -L "$TARGET_LINK" ]; then
+    echo "$ICON_INFO Creating symlink: $TARGET_LINK -> $SOURCE_SCRIPT"
+    if [ -f "$SOURCE_SCRIPT" ]; then
+        if ! ln -s "$SOURCE_SCRIPT" "$TARGET_LINK"; then
+            echo "$ICON_FAILURE WARNING: Failed to create symlink $TARGET_LINK." >&2
+        else
+            chmod +x "$TARGET_LINK"
+            echo "$ICON_SUCCESS Symlink created and executable."
+        fi
+    else
+        echo "$ICON_FAILURE WARNING: Source script $SOURCE_SCRIPT not found. Skipping symlink creation." >&2
+    fi
+fi
+
+
+# ==============================================================================
+# 2. COMMAND EXECUTION LOGIC
+# ==============================================================================
 
 COMMAND_OR_FILE="$1"
-EXECUTION_EXIT_CODE=0
-ACTION=""
-
-# --- EXECUTION LOGIC ---
 
 # 1. Check for 'pip' commands
 if [[ "$COMMAND_OR_FILE" == pip* ]]; then
@@ -40,7 +118,7 @@ if [[ "$COMMAND_OR_FILE" == pip* ]]; then
 # 2. Handle files that exist
 elif [ -f "$COMMAND_OR_FILE" ]; then
 
-    # --- A. Check common extensions (Python, JavaScript, TypeScript) ---
+    # --- A. Check common extensions ---
     
     # Python Extensions (.py)
     if [[ "$COMMAND_OR_FILE" =~ \.py$ ]]; then
@@ -114,8 +192,8 @@ fi
 # --- Final Status Check ---
 
 if [ "$EXECUTION_EXIT_CODE" -eq 0 ]; then
-    echo "$ICON_SUCCESS SUCCESS: $ACTION was successful."
+    echo "$ICON_SUCCESS FINAL SUCCESS: $ACTION completed successfully."
 else
-    echo "$ICON_FAILURE FAILURE: $ACTION failed. Execution exited with status ($EXECUTION_EXIT_CODE)." >&2
+    echo "$ICON_FAILURE FINAL FAILURE: $ACTION failed. Execution exited with status ($EXECUTION_EXIT_CODE)." >&2
     exit "$EXECUTION_EXIT_CODE"
 fi
