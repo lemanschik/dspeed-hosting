@@ -1,5 +1,66 @@
 #!/bin/bash
 
+## -- Start Environment Discovery -- ##
+# Get the full path to the script, resolving symlinks
+# ~/mailinabox/setup/miab
+SCRIPT_FULL_PATH="$(readlink -f "$0")"
+
+# Get the directory of the script
+# ~/mailinabox/setup
+SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
+SETUP_DIR=$SCRIPT_DIR
+
+# To get the parent directory of that directory (i.e., one level up)
+# ~/mailinabox
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+# ~/ or lets say /home/ubuntu/
+MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
+
+# TODO: add some generic verification that we got cloned at last into
+# a home folder under our original name ~/mailinabox. 
+# eg: mailinabox
+
+echo "Script Dir: $SCRIPT_DIR"
+echo "Parent Dir: $PARENT_DIR"
+echo "HOME: $MIAB_USER_DIR" 
+echo "PREV_PWD: $PWD" 
+## we should be here /home/MIAB_USER_DIR/mailinabox
+cd $PARENT_DIR
+echo "PWD: $PWD"
+
+## uv gets installed here and all user local bins
+if [ ! -d $MIAB_USER_DIR/.local/bin ]; then
+    mkdir -p $MIAB_USER_DIR/.local/bin
+fi
+
+if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
+    echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
+else
+    source $MIAB_USER_DIR/.bashrc
+    source $MIAB_USER_DIR/.profile
+    if echo "$PATH" | grep -q "$MIAB_USER_DIR/.local/bin"; then
+        echo "✅ $MIAB_USER_DIR/.local/bin is in the PATH."
+    else
+        echo "❌ $MIAB_USER_DIR/.local/bin is NOT in the PATH."
+        exit 1
+    fi
+fi
+
+if [ ! -f $MIAB_USER_DIR/.local/bin(mailinabox ]; then
+    ln -s $SCRIPT_DIR/start.sh $MIAB_USER_DIR/.local/bin/mailinabox
+    chmod +x $MIAB_USER_DIR/.local/bin/mailinabox
+fi
+
+# Put a start script in a global location. We tell the user to run 'mailinabox'
+# in the first dialog prompt, so we should do this before that starts.
+# cat > /usr/local/bin/mailinabox << EOF;
+# #!/bin/bash
+# cd $PARENT_DIR
+# source $SCRIPT_DIR/start.sh
+# EOF
+
+## End of Environment Discovery.
+
 # --- Input Validation ---
 if [ -z "$1" ]; then
     echo "ERROR: Please supply a command or a valid path to a file." >&2
