@@ -72,7 +72,7 @@ or subdomains you control).
 \n\nWe've guessed an email address. Backspace it and type in what
 you really want.
 \n\nEmail Address:" \
-			"me@$DEFAULT_DOMAIN_GUESS" \
+			"admin@$DEFAULT_DOMAIN_GUESS" \
 			EMAIL_ADDR
 
 		if [ -z "$EMAIL_ADDR" ]; then
@@ -82,7 +82,7 @@ you really want.
 		while ! python3 management/mailconfig.py validate-email "$EMAIL_ADDR"
 		do
 			input_box "Your Email Address" \
-				"That's not a valid email address.\n\nWhat email address are you setting this box up to manage?" \
+				"That's not a valid email address.\n\n?" \
 				"$EMAIL_ADDR" \
 				EMAIL_ADDR
 			if [ -z "$EMAIL_ADDR" ]; then
