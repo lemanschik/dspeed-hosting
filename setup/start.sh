@@ -2,22 +2,52 @@
 # This is the entry point for configuring the system.
 #####################################################
 
-# Get the full path to the script, resolving symlinks
-SCRIPT_FULL_PATH="$(readlink -f "$0")"
-# Get the directory of the script
-SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
-SETUP_DIR=$SCRIPT_DIR
-# To get the parent directory of that directory (i.e., one level up)
-PARENT_DIR="$(dirname "$SCRIPT_DIR")"
-MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
+## for the inital setup we need to be root or a user that can call sudo
 
-echo "Script Dir: $SCRIPT_DIR"
-echo "Parent Dir: $PARENT_DIR"
-echo "HOME: $MIAB_USER_DIR" 
-echo "PREV_PWD: $PWD" 
+# --- 1. Identify the Original Calling User ---
+if [ "$EUID" -eq 0 ]; then
+    # We are running as root (via sudo or otherwise)
+    
+    if [ -n "$SUDO_USER" ]; then
+        # Running via sudo, SUDO_USER gives the original user's name (best case)
+        ORIGINAL_USER="$SUDO_USER"
+        echo "$ICON_INFO Running as root. Original caller identified via \$SUDO_USER: $ORIGINAL_USER"
+    else
+        # Running as root, but SUDO_USER is missing (e.g., direct root login, 'su -')
+        # We fall back to checking the real user ID ($UID)
+        ORIGINAL_USER="$(id -un "$UID")"
+        echo "$ICON_INFO Running as root. Original caller identified via \$UID: $ORIGINAL_USER"
+    fi
+else
+    # Not running as root
+    ORIGINAL_USER="$(whoami)"
+    echo "$ICON_INFO Running as standard user: $ORIGINAL_USER"
+fi
+
+## Default if this does not work we need to do all the other magic
+if [ ! -d $ORIGINAL_USER/mailinabox ]; then
+    # Get the full path to the script, resolving symlinks
+    SCRIPT_FULL_PATH="$(readlink -f "$0")"
+    # Get the directory of the script
+    SCRIPT_DIR="$(dirname "$SCRIPT_FULL_PATH")"
+    SETUP_DIR=$SCRIPT_DIR
+    # To get the parent directory of that directory (i.e., one level up)
+    PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+    MIAB_USER_DIR="$(dirname "$PARENT_DIR")"
+    
+    echo "Script Dir: $SCRIPT_DIR"
+    echo "Parent Dir: $PARENT_DIR"
+    echo "HOME: $MIAB_USER_DIR" 
+    echo "PREV_PWD: $PWD" 
+else
+    PARENT_DIR=/home/$ORIGINAL_USER/mailinabox
+    MIAB_USER_DIR=/home/$ORIGINAL_USER
+fi
+
 ## we should be here /home/MIAB_USER_DIR/mailinabox
 cd $PARENT_DIR
 echo "PWD: $PWD"
+
 
 ## uv gets installed here and all user local bins
 if [ ! -d $MIAB_USER_DIR/.local/bin ]; then
