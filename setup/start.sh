@@ -2,6 +2,14 @@
 # This is the entry point for configuring the system.
 #####################################################
 
+# --- UTF-8 Icons for Status ---
+ICON_SUCCESS="✅"
+ICON_FAILURE="❌"
+ICON_INFO="ℹ️"
+ICON_COMMAND="🚀"
+ICON_FILE="📄"
+ICON_DIR="📁"
+
 ## for the inital setup we need to be root or a user that can call sudo
 
 # --- 1. Identify the Original Calling User ---
@@ -22,6 +30,7 @@ else
     # Not running as root
     ORIGINAL_USER="$(whoami)"
     echo "$ICON_INFO Running as standard user: $ORIGINAL_USER"
+    
 fi
 
 ## Default if this does not work we need to do all the other magic
