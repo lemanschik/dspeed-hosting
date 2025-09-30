@@ -1,8 +1,10 @@
 #!/bin/bash
 sudo env MIAB_USER_DIR="$MIAB_USER_DIR" sh -c '
+    cd $MIAB_USER_DIR/mailinabox
+
     # This runs as root, but MIAB_USER_DIR is available
-    if [ ! -d "$MIAB_USER_DIR/dependencies" ]; then
-        mkdir -p "$MIAB_USER_DIR/dependencies"
-    fi
-    source "$MIAB_USER_DIR/mailinabox/start.sh"
+    # if [ ! -d "$MIAB_USER_DIR/dependencies" ]; then
+    #    mkdir -p "$MIAB_USER_DIR/dependencies"
+    # fi
+    source "setup/start.sh"
 '
