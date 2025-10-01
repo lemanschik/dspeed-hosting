@@ -59,7 +59,8 @@ tools/editconf.py /etc/postfix/main.cf \
 	smtp_bind_address6="$PRIVATE_IPV6" \
 	myhostname="$PRIMARY_HOSTNAME"\
 	smtpd_banner="\$myhostname ESMTP Hi, I'm a Mail-in-a-Box (Ubuntu/Postfix; see https://mailinabox.email/)" \
-	mydestination=localhost
+	mydestination=localhost \
+    smtputf8_enable=yes
 
 # Tweak some queue settings:
 # * Inform users when their e-mail delivery is delayed more than 3 hours (default is not to warn).
@@ -67,7 +68,7 @@ tools/editconf.py /etc/postfix/main.cf \
 tools/editconf.py /etc/postfix/main.cf \
 	delay_warning_time=3h \
 	maximal_queue_lifetime=2d \
-	bounce_queue_lifetime=1d
+	bounce_queue_lifetime=1d \
 
 # Guard against SMTP smuggling
 # This "long-term" fix is recommended at https://www.postfix.org/smtp-smuggling.html.
@@ -257,7 +258,6 @@ tools/editconf.py /etc/postfix/main.cf \
 # $STORAGE_ROOT won't have spaces to simplify things.
 tools/editconf.py /etc/default/postgrey \
 	POSTGREY_OPTS=\""--inet=127.0.0.1:10023 --delay=180 --dbdir=$STORAGE_ROOT/mail/postgrey/db"\"
-
 
 # If the $STORAGE_ROOT/mail/postgrey is empty, copy the postgrey database over from the old location
 if [ ! -d "$STORAGE_ROOT/mail/postgrey/db" ]; then
