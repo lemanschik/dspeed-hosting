@@ -19,53 +19,12 @@ apt_install duplicity python3-pip virtualenv certbot rsync
 # b2sdk is used for backblaze backups.
 # boto3 is used for amazon aws backups.
 # Both are installed outside the pipenv, so they can be used by duplicity
-hide_output pip install --upgrade b2sdk boto3
-
-# Create a virtualenv for the installation of Python 3 packages
-# used by the management daemon.
-## replicated in ./management.sh
-# used by the management daemon.
-inst_dir=/usr/local/lib/mailinabox
-mkdir -p $inst_dir
-venv=$inst_dir/env
-if [ ! -d $venv ]; then
-    if apt-cache show "pip3-venv" >/dev/null 2>&1; then
-        apt-get -q -q update	
-        apt_get_quiet install dialog python3 python3-pip python3-dev python3-venv || exit 1
-        # Ubuntu 24.04 and Python 3.12 requires venv
-        # export DEB_PYTHON_INSTALL_LAYOUT='deb'
-        hide_output python3 -m venv $venv
-
-        source $venv/bin/activate
-        # Upgrade pip because the Ubuntu-packaged version is out of date.
-        hide_output $venv/bin/pip install --upgrade pip
-        
-        # Installing email_validator is repeated in setup/management.sh, but in setup/management.sh
-        # we install it inside a virtualenv. In this script, we don't have the virtualenv yet
-        # so we install the python package globally.
-        hide_output $venv/bin/pip install "email_validator>=1.0.0" || exit 1
-    fisource $venv/bin/activate
-else
-    source $venv/bin/activate
-fi
-
-if [ ! -d $venv ]; then
-	# A bug specific to Ubuntu 22.04 and Python 3.10 requires
-	# forcing a virtualenv directory layout option (see #2335
-	# and https://github.com/pypa/virtualenv/pull/2415). In
-	# our issue, reportedly installing python3-distutils didn't
-	# fix the problem.)
-	export DEB_PYTHON_INSTALL_LAYOUT='deb'
-	hide_output virtualenv -ppython3 $venv
-fi
-
-# Upgrade pip because the Ubuntu-packaged version is out of date.
-hide_output $venv/bin/pip install --upgrade pip
+hide_output uv pip install --upgrade b2sdk boto3
 
 # Install other Python 3 packages used by the management daemon.
 # The first line is the packages that Josh maintains himself!
 # NOTE: email_validator is repeated in setup/questions.sh, so please keep the versions synced.
-hide_output $venv/bin/pip install --upgrade \
+hide_output uv pip install --upgrade \
 	rtyaml "email_validator>=1.0.0" "exclusiveprocess" \
 	flask dnspython python-dateutil expiringdict gunicorn \
 	qrcode[pil] pyotp \
@@ -77,6 +36,15 @@ hide_output $venv/bin/pip install --upgrade \
 # Create a backup directory and a random key for encrypting backups.
 mkdir -p "$STORAGE_ROOT/backup"
 if [ ! -f "$STORAGE_ROOT/backup/secret_key.txt" ]; then
+    # using umask is technically superior for security and atomicity:
+    # Security/Atomicity (The main reason): When openssl creates the file, 
+    # the permissions are applied at the moment of creation by the kernel. 
+    # The file never exists with the system's default permissions (which might be 644 or 664).
+    # If you used chmod: The shell first creates the file with default permissions (e.g., 644). 
+    # For a split second, the file exists, and the "group" and "others" users can read the secret key.
+    # Then, the chmod 600 command runs to lock it down.
+    # Conciseness: It ties the permission setting directly to the creation command inside a clean subshell, 
+    # ensuring that only the secret file creation is affected by the temporary security policy.
 	(umask 077; openssl rand -base64 2048 > "$STORAGE_ROOT/backup/secret_key.txt")
 fi
 
@@ -105,6 +73,7 @@ unzip -q /tmp/bootstrap.zip -d $assets_dir
 mv $assets_dir/bootstrap-$bootstrap_version-dist $assets_dir/bootstrap
 rm -f /tmp/bootstrap.zip
 
+# TODO: Replace with miab management/management-service.sh 
 # Create an init script to start the management daemon and keep it
 # running after a reboot.
 # Set a long timeout since some commands take a while to run, matching
@@ -122,11 +91,16 @@ mkdir -p /var/lib/mailinabox
 tr -cd '[:xdigit:]' < /dev/urandom | head -c 32 > /var/lib/mailinabox/api.key
 chmod 640 /var/lib/mailinabox/api.key
 
-source $venv/bin/activate
-export PYTHONPATH=$PWD/management
-exec gunicorn -b localhost:10222 -w 1 --timeout 630 wsgi:app
+echo "Starting Gunicorn server via uv run..."
+
+# Set PYTHONPATH ONLY for this command execution to ensure Gunicorn finds modules in 'management'
+PYTHONPATH=$PWD/management \
+  uv run gunicorn -b localhost:10222 -w 1 --timeout 630 wsgi:app
+
 EOF
+
 chmod +x $inst_dir/start
+
 cp --remove-destination conf/mailinabox.service /lib/systemd/system/mailinabox.service # target was previously a symlink so remove it first
 hide_output systemctl link -f /lib/systemd/system/mailinabox.service
 hide_output systemctl daemon-reload
@@ -135,7 +109,8 @@ hide_output systemctl enable $(readlink -f /etc/systemd/system/mailinabox.servic
 # Perform nightly tasks at 3am in system time: take a backup, run
 # status checks and email the administrator any changes.
 
-minute=$((RANDOM % 60))  # avoid overloading mailinabox.email
+minute=$((RANDOM % 60))  
+# avoid overloading mailinabox.email
 cat > /etc/cron.d/mailinabox-nightly << EOF;
 # Mail-in-a-Box --- Do not edit / will be overwritten on update.
 # Run nightly tasks: backup, status checks.
