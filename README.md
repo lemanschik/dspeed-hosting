@@ -23,7 +23,7 @@ Additionally, this project has a [Code of Conduct](CODE_OF_CONDUCT.md), which su
 In The Box
 ----------
 
-Mail-in-a-Box turns a fresh Ubuntu 22.04 LTS 64-bit machine into a working mail server by installing and configuring various components.
+Mail-in-a-Box turns a fresh Ubuntu > 22.04 LTS 64-bit machine into a working mail server by installing and configuring various components.
 
 It is a one-click email appliance. There are no user-configurable setup options. It "just works."
 
@@ -42,7 +42,7 @@ It also includes system management tools:
 * A control panel for adding/removing mail users, aliases, custom DNS records, configuring backups, etc.
 * An API for all of the actions on the control panel
 
-Internationalized domain names are supported and configured easily (but SMTPUTF8 is not supported, unfortunately).
+Internationalized domain names are supported and configured easily.
 
 It also supports static website hosting since the box is serving HTTPS anyway. (To serve a website for your domains elsewhere, just add a custom DNS "A" record in you Mail-in-a-Box's control panel to point domains to another server.)
 
@@ -58,7 +58,11 @@ For experts, start with a completely fresh (really, I mean it) Ubuntu 22.04 LTS 
 
 Clone this repository and checkout the tag corresponding to the most recent release (which you can find in the tags or releases lists on GitHub):
 
-	$ git clone https://github.com/mail-in-a-box/mailinabox
+Be sure to target your current $HOME simple via at the end of the clone or cd ~ before doing the clone only $HOME/sub_folder_name
+
+cloning it to a nested folder eg inside a sub_folder of home like $HOME/sub_folder/mailinabox is not supported.
+
+	$ git clone https://github.com/mail-in-a-box/mailinabox ~
 	$ cd mailinabox
 	$ git checkout TAGNAME
 
@@ -81,6 +85,11 @@ Contributing and Development
 
 Mail-in-a-Box is an open source project. Your contributions and pull requests are welcome. See [CONTRIBUTING](CONTRIBUTING.md) to get started. 
 
+- management/* holds the management daemon and scripts
+- tools/ holds scripts that can get runned as user and via the management daemon
+- setup/ holds the base config and stuff that gets executed when you run mailinabox as cli command in your terminal
+- conf/ holds config tempaltes that get useed by all 3 above.
+- api/ is only for documentation.
 
 The Acknowledgements
 --------------------
