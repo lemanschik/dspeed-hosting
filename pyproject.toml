@@ -1,3 +1,17 @@
+[project]
+name = "miab-project"
+version = "0.0.1"
+# ... other metadata (authors, dependencies, etc.) ...
+
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+# This tells setuptools to automatically find directories containing an __init__.py 
+# starting from the project root.
+where = ["."] 
+
 [tool.ruff]
 line-length = 320 # https://github.com/astral-sh/ruff/issues/8106
 indent-width = 4
